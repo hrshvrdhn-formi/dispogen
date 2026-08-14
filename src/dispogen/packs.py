@@ -25,7 +25,14 @@ def build_all(cfg: Config, tax: Taxonomy, only: list[str] | None = None) -> dict
     from .preflight import _token_vocab
     vocab = sorted(_token_vocab(cfg))
 
-    targets = [tax.by_code[c] for c in only] if only else tax.leaves
+    # The abstention bucket is where the engine goes when NO disposition applies.
+    # It has no triggers to probe and no rivals to rebut, so FP/FN probes for it
+    # are incoherent by construction: an "FP for abstention" is just a decidable
+    # call, which is every other case in the suite. Excluded, and recorded as a
+    # class-I degenerate leaf rather than silently skipped.
+    skip = set(cfg.get("taxonomy.exclude_from_generation", []) or [])
+    targets = [tax.by_code[c] for c in only] if only else [
+        l for l in tax.leaves if l.engine_code not in skip]
     out = {}
     for leaf in targets:
         alloc = taxmod.allocate(cfg, tax, leaf, graph, emp)

@@ -88,6 +88,10 @@ taxonomy:
   # Third-party-answered codes. Any transcript-derivable leaf can be voiced by a
   # non-policyholder, so these are always available as an out-of-class rival.
   speaker_identity_rivals: ["0072", "0071", "0074"]
+  # The engine's abstention bucket, not a disposition. It has no triggers to
+  # probe and no rivals to rebut — an "FP for abstention" is just a decidable
+  # call, i.e. every other case in the suite.
+  exclude_from_generation: [NEEDS_HUMAN_REVIEW]
 
 transcripts:
   # Tried in order. First match wins. `pyrepr` is single-quoted Python repr —

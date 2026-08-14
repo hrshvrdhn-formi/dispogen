@@ -59,6 +59,13 @@ class AnthropicProvider(Provider):
         import time
 
         import anthropic as _a
+        import httpx
+
+        # A long stream is a long-lived socket. Gateways reset them, and the raw
+        # httpx error is NOT always wrapped as APIConnectionError — a bare
+        # ReadError escaping here loses a disposition that was minutes from done.
+        retry_on = (_a.RateLimitError, _a.InternalServerError, _a.APITimeoutError,
+                    _a.APIConnectionError, httpx.TransportError, httpx.RemoteProtocolError)
 
         attempts = int(self.spec.get("max_retries", 6))
         for i in range(attempts):
@@ -67,8 +74,7 @@ class AnthropicProvider(Provider):
                     with self._client.messages.stream(**kwargs) as stream:
                         return stream.get_final_message()
                 return self._client.messages.create(**kwargs)
-            except (_a.RateLimitError, _a.InternalServerError, _a.APITimeoutError,
-                    _a.APIConnectionError) as e:
+            except retry_on as e:
                 if i == attempts - 1:
                     raise
                 # Jitter matters more than the base delay here: without it every

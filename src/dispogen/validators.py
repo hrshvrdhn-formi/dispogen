@@ -37,6 +37,39 @@ def _transcript_text(case: dict) -> str:
     return "\n".join(t.get("text", "") for t in case.get("transcript", []) or [])
 
 
+# Where a case's evidence is allowed to live, per source-of-truth class. A
+# telephony disposition is decided by a SIP release code, not by anything anyone
+# said, and its cases correctly carry no transcript at all — so checking evidence
+# against the transcript fails every one of them and reads as a generation defect
+# when it is really the validator ignoring the class.
+_EVIDENCE_FIELDS = {
+    "transcript":  ("transcript",),
+    "telephony":   ("pre_call_parameters",),
+    "system":      ("pre_call_parameters",),
+    "cross-call":  ("transcript", "pre_call_parameters"),
+    "hybrid":      ("transcript", "pre_call_parameters"),
+    "abstention":  ("transcript", "pre_call_parameters"),
+}
+
+
+def _evidence_text(case: dict, soc: str) -> str:
+    # An FP probe's correct answer is a DIFFERENT disposition, which may sit in a
+    # different source-of-truth class than the host: a false positive for a
+    # telephony leaf is precisely a real conversation that looks like a carrier
+    # release. Pinning it to the host's class rejects the probes that matter most.
+    if case.get("probe_type") == "FP":
+        soc = "hybrid"
+    parts = []
+    for f in _EVIDENCE_FIELDS.get(soc, ("transcript", "pre_call_parameters")):
+        if f == "transcript":
+            parts.append(_transcript_text(case))
+        else:
+            # Values only: a match on a KEY would let "policy_no" count as
+            # evidence, which is a field name rather than a fact about the call.
+            parts += [str(v) for v in (case.get("pre_call_parameters") or {}).values()]
+    return "\n".join(p for p in parts if p)
+
+
 def _trigrams(s: str) -> set[str]:
     s = re.sub(r"\s+", " ", re.sub(r"[^\w\s]", "", nfc(s).lower()))
     return {s[i:i + 3] for i in range(max(0, len(s) - 2))}
@@ -73,10 +106,11 @@ def validate(cfg: Config, tax: Taxonomy, doc: dict, pack: dict,
     if [c["probe_type"] for c in cases] != want:
         E("V2", code, f"output contract orders probes {order}; got a different sequence")
 
+    soc_class = pack["source_of_truth_class"]
     seen_slots = set()
     for c in cases:
         cid = c.get("test_case_id", "?")
-        tx = _transcript_text(c)
+        tx = _evidence_text(c, soc_class)
 
         # ---- V3 polarity
         if c["probe_type"] == "FN" and c.get("expected_expanded") != leaf.label:
@@ -111,15 +145,21 @@ def validate(cfg: Config, tax: Taxonomy, doc: dict, pack: dict,
             seen_slots.add(slot)
 
         # ---- V6 source-of-truth conformance
+        # Only FN probes ARE the host disposition, so only they must look like it.
+        # An FP probe is deliberately something else and is bound by the class of
+        # the disposition it actually belongs to, which the host does not fix.
         soc = pack["source_of_truth_class"]
         toks = set(pack.get("token_vocabulary", []))
-        if soc == "transcript":
-            subst = [t for t in c.get("transcript", [])
-                     if t.get("speaker") == "customer" and t.get("text") not in toks]
-            if not subst:
-                E("V6", cid, "transcript-class case needs >=1 substantive customer turn")
-        if soc in ("telephony", "system") and c.get("transcript"):
-            E("V6", cid, f"{soc}-class case must carry no transcript")
+        if c["probe_type"] == "FN":
+            if soc == "transcript":
+                subst = [t for t in c.get("transcript", [])
+                         if t.get("speaker") == "customer" and t.get("text") not in toks]
+                if not subst:
+                    E("V6", cid, "transcript-class case needs >=1 substantive customer turn")
+            if soc in ("telephony", "system") and c.get("transcript"):
+                E("V6", cid, f"{soc}-class FN probe must carry no transcript")
+        elif not c.get("transcript") and not c.get("pre_call_parameters"):
+            E("V6", cid, "FP probe carries neither a transcript nor pre-call state")
 
         # ---- V7 re-dial validity
         rd = c.get("redial", {}) or {}
@@ -145,7 +185,7 @@ def validate(cfg: Config, tax: Taxonomy, doc: dict, pack: dict,
                     E("V9", cid, f"missing {k}")
             tp = nfc(c.get("trap_phrase") or "")
             if tp and tp not in nfc(tx):
-                E("V9", cid, f"trap_phrase not present in transcript: {tp!r}")
+                E("V9", cid, f"trap_phrase not present in the {soc_class} evidence: {tp!r}")
 
         # ---- V10 compliance rails (client-configured)
         agent_tx = " ".join(t.get("text", "") for t in c.get("transcript", [])
@@ -164,7 +204,7 @@ def validate(cfg: Config, tax: Taxonomy, doc: dict, pack: dict,
         if not de:
             E("V11", cid, "decisive_evidence missing")
         elif de not in nfc(tx):
-            E("V11", cid, f"decisive_evidence NOT verbatim in transcript: {de!r}")
+            E("V11", cid, f"decisive_evidence NOT verbatim in the {soc_class} evidence: {de!r}")
         if not c.get("rebutted_rivals"):
             E("V11", cid, "no rebutted_rivals -- every case must rebut its nearest rivals")
         for r in c.get("rebutted_rivals", []):
@@ -224,12 +264,13 @@ def validate(cfg: Config, tax: Taxonomy, doc: dict, pack: dict,
     # ---- V8 intra-disposition near-duplicates
     for i in range(len(cases)):
         for j in range(i + 1, len(cases)):
-            a, b = _trigrams(_transcript_text(cases[i])), _trigrams(_transcript_text(cases[j]))
+            a = _trigrams(_evidence_text(cases[i], soc_class))
+            b = _trigrams(_evidence_text(cases[j], soc_class))
             if a and b:
                 sim = len(a & b) / len(a | b)
                 if sim > 0.82:
                     E("V8", f"{cases[i]['test_case_id']} ~ {cases[j]['test_case_id']}",
-                      f"near-duplicate transcripts, Jaccard trigram = {sim:.3f}")
+                      f"near-duplicate cases, Jaccard trigram = {sim:.3f}")
     return errs
 
 
