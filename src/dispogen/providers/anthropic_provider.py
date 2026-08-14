@@ -32,10 +32,20 @@ class AnthropicProvider(Provider):
                 "the anthropic SDK is not installed — `pip install -e '.[anthropic]'`, "
                 "or run with `--provider dryrun` to emit prompts without calling a model"
             ) from e
+        import os
+
         import anthropic as _a
         # Resolves ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN, or an `ant auth login`
         # profile, in that order. A bare constructor is correct.
-        self._client = _a.Anthropic()
+        #
+        # `base_url` points at a gateway (Microsoft Foundry, an internal proxy)
+        # that speaks the Anthropic wire format. Config beats the environment so a
+        # client binding can pin its own endpoint; both are optional.
+        kw = {}
+        url = spec.get("base_url") or os.environ.get("ANTHROPIC_BASE_URL")
+        if url:
+            kw["base_url"] = url
+        self._client = _a.Anthropic(**kw)
         self.model = spec.get("model", "claude-opus-5")
 
     def complete(self, system: str, user: str, *, schema: dict | None = None,

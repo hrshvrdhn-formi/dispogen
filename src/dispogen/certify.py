@@ -113,6 +113,15 @@ def run(cfg: Config, tax: Taxonomy, doc: dict, provider: str | None = None) -> l
     tax_blob = json.dumps(taxonomy_view(tax), ensure_ascii=False, indent=1)
     panel = [{**p, **({"provider": provider} if provider else {})}
              for p in cfg.get("models.critic_panel")]
+    # Pair each panel seat with a lens. Where the panel is one model repeated,
+    # the lens is the only thing making the seats different from each other.
+    lenses = cfg.get("certification.critic_lenses", []) or [{"id": "default", "instruction": ""}]
+    seats = [(p, lenses[i % len(lenses)]) for i, p in enumerate(panel)]
+    if len({p.get("model") for p in panel}) == 1 and len(panel) > 1:
+        log_note = (f"panel is {len(panel)}x {panel[0].get('model')} differing only by lens "
+                    f"— weaker than cross-vendor; unanimity here is not model-independent")
+    else:
+        log_note = ""
     unanimous = cfg.get("certification.require_unanimous", True)
     do_demote = cfg.get("certification.demote_on_dissent", True)
 
@@ -124,22 +133,23 @@ def run(cfg: Config, tax: Taxonomy, doc: dict, provider: str | None = None) -> l
             crit_tmpl.replace("{{TAXONOMY}}", tax_blob).replace("{{CALL}}", call),
             "## Call")
         verdicts = []
-        for i, spec in enumerate(panel):
-            spec = {**spec, "label": f"{cid}.critic{i}"}
+        for i, (spec, lens) in enumerate(seats):
+            spec = {**spec, "label": f"{cid}.critic{i}.{lens['id']}"}
             out = build_provider(spec).complete(
-                system="You grade calls against a written taxonomy. You refuse when "
-                       "the rules do not decide.",
+                system=("You grade calls against a written taxonomy. You refuse when "
+                        "the rules do not decide.\n\n" + (lens.get("instruction") or "")).strip(),
                 user=tail, cache_prefix=prefix,
                 max_tokens=spec.get("max_tokens"), effort=spec.get("effort"))
+            seat = {"model": out.model, "lens": lens["id"]}
             if out.provider == "dryrun":
-                verdicts.append({"model": out.model, "verdict": None,
+                verdicts.append({**seat, "verdict": None,
                                  "note": out.usage.get("prompt_written_to")})
                 continue
             if out.refused:
-                verdicts.append({"model": out.model, "verdict": None,
+                verdicts.append({**seat, "verdict": None,
                                  "note": f"refused: {out.refusal_category}"})
                 continue
-            verdicts.append({"model": out.model, "verdict": _json(out.text)})
+            verdicts.append({**seat, "verdict": _json(out.text)})
 
         if all(v["verdict"] is None for v in verdicts):
             log.append({"test_case_id": cid, "status": "NOT_RUN",
@@ -184,7 +194,8 @@ def run(cfg: Config, tax: Taxonomy, doc: dict, provider: str | None = None) -> l
         log.append({"test_case_id": cid, "status": status,
                     "declared_grade": case.get("declared_grade"),
                     "certified_grade": grade, "dissent": dissent,
-                    "panel": verdicts, "advocate": adv})
+                    "panel": verdicts, "advocate": adv,
+                    "panel_caveat": log_note})
     return log
 
 

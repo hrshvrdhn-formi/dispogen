@@ -202,3 +202,29 @@ domain_terms:
   - advisor
   - Hindi
   - Hinglish
+
+models:
+  # Microsoft Foundry deployment speaking the Anthropic wire format.
+  # base_url may also come from ANTHROPIC_BASE_URL; config wins.
+  generator:
+    provider: anthropic
+    model: claude-opus-5
+    effort: max
+    # 128000 is this deployment's ceiling (200000 returns a 400). max_tokens caps
+    # thinking PLUS text, and ten cases with full transcripts run 25-35k of text
+    # alone — at 32000 the reasoning consumed the whole budget and the response
+    # truncated inside case 1. Head-room is the fix, not less thinking.
+    max_tokens: 128000
+    thinking: adaptive
+  # Only claude-opus-5 is deployed on this Foundry resource. The three seats are
+  # therefore the SAME model differing only by lens (see certification.critic_lenses).
+  # That is a real weakening: unanimity here is not model-independent.
+  critic_panel:
+    - {provider: anthropic, model: claude-opus-5, effort: high, max_tokens: 16000}
+    - {provider: anthropic, model: claude-opus-5, effort: high, max_tokens: 16000}
+    - {provider: anthropic, model: claude-opus-5, effort: high, max_tokens: 16000}
+  advocate:
+    provider: anthropic
+    model: claude-opus-5
+    effort: xhigh
+    max_tokens: 16000

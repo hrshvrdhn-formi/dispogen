@@ -39,6 +39,31 @@ certification:
   # cross-family: shared training lineage means shared blind spots. Ship a
   # second vendor via a custom provider for full strength.
   panel_size: 3
+  # When only one deployment is reachable, model diversity is zero and the
+  # sampling parameters that would vary the runs are rejected by the API — so
+  # three "independent" critics collapse to one near-deterministic answer
+  # repeated three times, and unanimity becomes automatic.
+  #
+  # Lenses restore SOME independence by varying what each critic is told to
+  # weigh. Critics that read the same rules through different priorities do
+  # disagree, and their disagreement is informative. This is a weaker substitute
+  # for a second vendor, not an equivalent one — do not read unanimity across
+  # lenses as unanimity across models.
+  critic_lenses:
+    - id: triggers
+      instruction: >-
+        Weigh the trigger phrases and inclusions first. Ask what the written
+        rules positively license, and refuse to go beyond them.
+    - id: exclusions
+      instruction: >-
+        Weigh the exclusions, NOT-THIS clauses and tie-breakers first. Ask what
+        the written rules positively FORBID, and let an exclusion override an
+        otherwise-matching trigger.
+    - id: sufficiency
+      instruction: >-
+        Weigh evidence sufficiency first. Ask what the transcript actually
+        establishes rather than implies, and prefer the coarsest grade the
+        evidence supports over the most specific one that is consistent with it.
 
 deidentify:
   enabled: true

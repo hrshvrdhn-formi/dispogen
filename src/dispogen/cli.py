@@ -133,9 +133,57 @@ def cmd_packs(a) -> int:
     return 0
 
 
+def _extract_json(text: str):
+    """Recover the JSON object from a response that may be fenced or prefaced.
+
+    Writing the raw text straight to disk means one stray sentence of preamble
+    makes the file unparseable, and the failure only surfaces at validate time
+    with no indication that generation itself succeeded.
+    """
+    t = (text or "").strip()
+    if t.startswith("```"):
+        t = t[3:]
+        t = t.split("\n", 1)[1] if t[:4].lower().startswith("json") else t
+        t = t.rsplit("```", 1)[0]
+    i, j = t.find("{"), t.rfind("}")
+    if i < 0 or j <= i:
+        return None
+    try:
+        return json.loads(t[i:j + 1])
+    except json.JSONDecodeError:
+        return None
+
+
+def _generate_one(cfg, spec, tmpl, code, pack) -> tuple[str, str, int]:
+    """Returns (code, message, rc). Runs in a worker thread."""
+    from .providers import build as build_provider
+    prov = build_provider({**spec, "label": code})
+    prefix, tail = ("", tmpl.replace("{{PACK}}", json.dumps(pack, ensure_ascii=False, indent=1)))
+    out = prov.complete(system="You are an adversarial QA engineer.", user=tail,
+                        cache_prefix=prefix or None, schema=None,
+                        max_tokens=spec.get("max_tokens"))
+    if out.refused:
+        return code, f"REFUSED ({out.refusal_category}) — see docs/ARCHITECTURE.md", 1
+    if out.provider == "dryrun":
+        return code, f"prompt written -> {out.usage.get('prompt_written_to')}", 0
+    doc = _extract_json(out.text)
+    if doc is None:
+        p = cfg.workdir("logs", "raw") / f"{code}.txt"
+        p.write_text(out.text, encoding="utf-8")
+        return code, f"UNPARSEABLE ({out.stop_reason}, {len(out.text)} chars) -> {p}", 1
+    # Models routinely misreport their own identity in generated text. The
+    # response carries the deployment that actually ran; trust that instead, or
+    # the provenance on every case is wrong in a way nothing downstream catches.
+    doc["generated_by"] = out.model
+    dst = cfg.workdir("output", "cases") / f"{code}.json"
+    dst.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
+    n = len(doc.get("cases", []))
+    amb = len(doc.get("ambiguities", []) or [])
+    return code, f"{n} cases, {amb} ambiguities -> {dst.name}", 0
+
+
 def cmd_generate(a) -> int:
     cfg = _cfg(a)
-    from .providers import build as build_provider
     spec = dict(cfg.get("models.generator"))
     if a.provider:
         spec["provider"] = a.provider
@@ -143,22 +191,35 @@ def cmd_generate(a) -> int:
     tax = taxmod.load(cfg)
     p = packmod.build_all(cfg, tax, a.only or None)
     packmod.write(cfg, p)
+
+    workers = max(1, int(a.workers or 1))
+    todo = list(p.items())
+    if a.skip_existing:
+        d = cfg.workdir("output", "cases")
+        before = len(todo)
+        todo = [(c, pk) for c, pk in todo if not (d / f"{c}.json").exists()]
+        if before != len(todo):
+            print(f"skipping {before - len(todo)} already generated; {len(todo)} to go")
     rc = 0
-    for code, pack in p.items():
-        spec["label"] = code
-        prov = build_provider(spec)
-        user = tmpl.replace("{{PACK}}", json.dumps(pack, ensure_ascii=False, indent=1))
-        out = prov.complete(system="You are an adversarial QA engineer.", user=user,
-                            schema=None, max_tokens=spec.get("max_tokens"))
-        if out.refused:
-            print(f"{code}: REFUSED ({out.refusal_category}) — see docs/ARCHITECTURE.md")
-            rc = 1
-        elif out.provider == "dryrun":
-            print(f"{code}: prompt written -> {out.usage.get('prompt_written_to')}")
-        else:
-            dst = cfg.workdir("output", "cases") / f"{code}.json"
-            dst.write_text(out.text, encoding="utf-8")
-            print(f"{code}: {len(out.text)} chars -> {dst}")
+    if workers == 1:
+        for code, pack in todo:
+            code, msg, r = _generate_one(cfg, spec, tmpl, code, pack)
+            rc |= r
+            print(f"{code}: {msg}", flush=True)
+        return rc
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    done = 0
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(_generate_one, cfg, spec, tmpl, c, pk): c for c, pk in todo}
+        for f in as_completed(futs):
+            done += 1
+            try:
+                code, msg, r = f.result()
+            except Exception as e:  # one disposition failing must not lose the rest
+                code, msg, r = futs[f], f"ERROR {type(e).__name__}: {e}", 1
+            rc |= r
+            print(f"[{done}/{len(todo)}] {code}: {msg}", flush=True)
     return rc
 
 
@@ -320,6 +381,9 @@ def main(argv=None) -> int:
     g = add("generate", cmd_generate)
     g.add_argument("--only", nargs="*", help="engine codes")
     g.add_argument("--provider", help="override models.generator.provider (e.g. dryrun)")
+    g.add_argument("--workers", type=int, default=1, help="dispositions to generate concurrently")
+    g.add_argument("--skip-existing", action="store_true",
+                   help="leave dispositions that already have a case file alone")
     add("validate", cmd_validate).add_argument("--only", nargs="*")
     cert = add("certify", cmd_certify)
     cert.add_argument("--only", nargs="*")
@@ -330,7 +394,7 @@ def main(argv=None) -> int:
     add("run", cmd_run).add_argument("--check-credentials", action="store_true")
 
     a = ap.parse_args(argv)
-    for attr in ("only", "provider", "check_credentials"):
+    for attr in ("only", "provider", "check_credentials", "workers", "skip_existing"):
         if not hasattr(a, attr):
             setattr(a, attr, None)
     try:
