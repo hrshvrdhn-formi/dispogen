@@ -26,9 +26,10 @@ class DryRunProvider(Provider):
         self.model = spec.get("model", "dryrun")
 
     def complete(self, system: str, user: str, *, schema=None,
-                 max_tokens=None, effort=None) -> Completion:
+                 max_tokens=None, effort=None, cache_prefix=None) -> Completion:
         label = (self.spec.get("label") or
                  hashlib.sha256(user.encode()).hexdigest()[:12])
+        user = f"{cache_prefix}{user}" if cache_prefix else user
         blob = (f"=== SYSTEM ===\n{system}\n\n=== USER ===\n{user}\n\n"
                 f"=== SCHEMA ===\n{json.dumps(schema, indent=2, ensure_ascii=False) if schema else '(none)'}\n")
         p = self.out / f"{label}.prompt.txt"

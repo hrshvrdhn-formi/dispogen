@@ -103,3 +103,22 @@ def test_case_documents_survive_a_round_trip_through_validate(cfg, tax):
     p = packmod.build_all(cfg, tax, [HOST])[HOST]
     errs = validate(cfg, tax, {"engine_code": HOST, "cases": []}, p)
     assert any(e.startswith("[V2]") for e in errs)
+
+
+def test_the_cacheable_prefix_ends_where_the_per_case_content_begins():
+    """The taxonomy must land in the prefix, the call must not.
+
+    Getting this backwards still works and still produces correct verdicts — it
+    just silently costs an order of magnitude more on a full run, which is the
+    kind of regression nothing else would catch.
+    """
+    tmpl = "instructions\n## Taxonomy\n{TAX}\n## Call\n{CALL}\n"
+    prefix, tail = certify.split_at(tmpl, "## Call")
+    assert "## Taxonomy" in prefix and "{CALL}" not in prefix
+    assert tail.startswith("## Call")
+    assert prefix + tail == tmpl
+
+
+def test_a_missing_marker_degrades_to_sending_everything_uncached():
+    prefix, tail = certify.split_at("no marker here", "## Call")
+    assert (prefix, tail) == ("no marker here", "")

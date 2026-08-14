@@ -34,7 +34,15 @@ class Provider:
         self.model = spec.get("model", "")
 
     def complete(self, system: str, user: str, *, schema: dict | None = None,
-                 max_tokens: int | None = None, effort: str | None = None) -> Completion:
+                 max_tokens: int | None = None, effort: str | None = None,
+                 cache_prefix: str | None = None) -> Completion:
+        """`cache_prefix` is prepended to `user` and marked cacheable.
+
+        Certification sends the whole taxonomy to every critic for every case. On
+        a full run that is the dominant cost by an order of magnitude, and all of
+        it is the same bytes — so the split is worth carrying through the
+        interface rather than leaving each provider to rediscover it.
+        """
         raise NotImplementedError
 
 

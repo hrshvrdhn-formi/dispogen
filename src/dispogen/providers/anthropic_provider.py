@@ -39,17 +39,25 @@ class AnthropicProvider(Provider):
         self.model = spec.get("model", "claude-opus-5")
 
     def complete(self, system: str, user: str, *, schema: dict | None = None,
-                 max_tokens: int | None = None, effort: str | None = None) -> Completion:
+                 max_tokens: int | None = None, effort: str | None = None,
+                 cache_prefix: str | None = None) -> Completion:
         mt = int(max_tokens or self.spec.get("max_tokens", 8000))
         oc: dict = {"effort": effort or self.spec.get("effort", "high")}
         if schema:
             oc["format"] = {"type": "json_schema", "schema": schema}
 
+        if cache_prefix:
+            content = [{"type": "text", "text": cache_prefix,
+                        "cache_control": {"type": "ephemeral"}},
+                       {"type": "text", "text": user}]
+        else:
+            content = user
+
         kwargs = dict(
             model=self.model,
             max_tokens=mt,
             system=system,
-            messages=[{"role": "user", "content": user}],
+            messages=[{"role": "user", "content": content}],
             output_config=oc,
         )
         if self.spec.get("thinking", "adaptive") == "adaptive":

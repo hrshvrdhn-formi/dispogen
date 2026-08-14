@@ -58,6 +58,17 @@ def taxonomy_view(tax: Taxonomy) -> dict:
     }
 
 
+def split_at(template: str, marker: str) -> tuple[str, str]:
+    """Split a rendered prompt into a cacheable prefix and the per-case tail.
+
+    Everything before `marker` — instructions plus the whole taxonomy — is
+    identical for every case and every critic. Sending it uncached on a full run
+    costs more than the generation it is checking.
+    """
+    i = template.find(marker)
+    return (template, "") if i < 0 else (template[:i], template[i:])
+
+
 def _json(text: str) -> Any:
     """Tolerate a fenced or prose-wrapped object without silently accepting junk."""
     t = (text or "").strip()
@@ -109,13 +120,16 @@ def run(cfg: Config, tax: Taxonomy, doc: dict, provider: str | None = None) -> l
     for case in doc.get("cases", []):
         cid = case.get("test_case_id", "?")
         call = json.dumps(blind_view(case), ensure_ascii=False, indent=1)
+        prefix, tail = split_at(
+            crit_tmpl.replace("{{TAXONOMY}}", tax_blob).replace("{{CALL}}", call),
+            "## Call")
         verdicts = []
         for i, spec in enumerate(panel):
             spec = {**spec, "label": f"{cid}.critic{i}"}
             out = build_provider(spec).complete(
                 system="You grade calls against a written taxonomy. You refuse when "
                        "the rules do not decide.",
-                user=crit_tmpl.replace("{{TAXONOMY}}", tax_blob).replace("{{CALL}}", call),
+                user=tail, cache_prefix=prefix,
                 max_tokens=spec.get("max_tokens"), effort=spec.get("effort"))
             if out.provider == "dryrun":
                 verdicts.append({"model": out.model, "verdict": None,
@@ -147,11 +161,14 @@ def run(cfg: Config, tax: Taxonomy, doc: dict, provider: str | None = None) -> l
             spec = {**dict(cfg.get("models.advocate")), "label": f"{cid}.advocate"}
             if provider:
                 spec["provider"] = provider
+            a_prefix, a_tail = split_at(
+                (adv_tmpl.replace("{{TAXONOMY}}", tax_blob)
+                 .replace("{{CASE}}", json.dumps(blind_view(case), ensure_ascii=False, indent=1))
+                 .replace("{{TRACE}}", json.dumps(trace_view(case), ensure_ascii=False, indent=1))),
+                "## Case under review")
             out = build_provider(spec).complete(
                 system="You are an adversarial reviewer. Assume the case is wrong.",
-                user=(adv_tmpl.replace("{{TAXONOMY}}", tax_blob)
-                      .replace("{{CASE}}", json.dumps(blind_view(case), ensure_ascii=False, indent=1))
-                      .replace("{{TRACE}}", json.dumps(trace_view(case), ensure_ascii=False, indent=1))),
+                user=a_tail, cache_prefix=a_prefix,
                 max_tokens=spec.get("max_tokens"), effort=spec.get("effort"))
             adv = _json(out.text) if out.provider != "dryrun" else None
             if adv and adv.get("verdict") != "SUSTAINED":
