@@ -48,6 +48,35 @@ class AnthropicProvider(Provider):
         self._client = _a.Anthropic(**kw)
         self.model = spec.get("model", "claude-opus-5")
 
+    def _call_with_retry(self, kwargs: dict, mt: int):
+        """Retry on 429 and transient 5xx with exponential backoff.
+
+        The rate gate is an estimate, so some requests will still be refused —
+        and a disposition lost to a 429 costs a full regeneration of work the
+        server already accepted payment for on its siblings.
+        """
+        import random
+        import time
+
+        import anthropic as _a
+
+        attempts = int(self.spec.get("max_retries", 6))
+        for i in range(attempts):
+            try:
+                if mt > _STREAM_ABOVE:
+                    with self._client.messages.stream(**kwargs) as stream:
+                        return stream.get_final_message()
+                return self._client.messages.create(**kwargs)
+            except (_a.RateLimitError, _a.InternalServerError, _a.APITimeoutError,
+                    _a.APIConnectionError) as e:
+                if i == attempts - 1:
+                    raise
+                # Jitter matters more than the base delay here: without it every
+                # worker refused in the same second retries in the same second.
+                delay = _retry_after(e) or min(60.0, 4.0 * (2 ** i))
+                time.sleep(delay * (0.5 + random.random()))
+        raise RuntimeError("unreachable")
+
     def complete(self, system: str, user: str, *, schema: dict | None = None,
                  max_tokens: int | None = None, effort: str | None = None,
                  cache_prefix: str | None = None) -> Completion:
@@ -73,11 +102,7 @@ class AnthropicProvider(Provider):
         if self.spec.get("thinking", "adaptive") == "adaptive":
             kwargs["thinking"] = {"type": "adaptive"}
 
-        if mt > _STREAM_ABOVE:
-            with self._client.messages.stream(**kwargs) as stream:
-                msg = stream.get_final_message()
-        else:
-            msg = self._client.messages.create(**kwargs)
+        msg = self._call_with_retry(kwargs, mt)
 
         if msg.stop_reason == "refusal":
             details = getattr(msg, "stop_details", None)
@@ -95,6 +120,19 @@ class AnthropicProvider(Provider):
                 parsed = None
         return Completion(text=text, parsed=parsed, model=msg.model, provider=self.name,
                           stop_reason=msg.stop_reason, usage=_usage(msg))
+
+
+def _retry_after(err) -> float | None:
+    """Honour the server's own retry-after when it gives one."""
+    h = getattr(getattr(err, "response", None), "headers", None)
+    for k in ("retry-after", "anthropic-ratelimit-tokens-reset"):
+        v = (h or {}).get(k) if h else None
+        if v:
+            try:
+                return float(v)
+            except (TypeError, ValueError):
+                pass
+    return None
 
 
 def _usage(msg) -> dict:

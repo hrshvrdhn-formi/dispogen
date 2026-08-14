@@ -154,14 +154,24 @@ def _extract_json(text: str):
         return None
 
 
-def _generate_one(cfg, spec, tmpl, code, pack) -> tuple[str, str, int]:
+def _generate_one(cfg, spec, tmpl, code, pack, gate=None) -> tuple[str, str, int]:
     """Returns (code, message, rc). Runs in a worker thread."""
     from .providers import build as build_provider
+    from .ratelimit import estimate_tokens
     prov = build_provider({**spec, "label": code})
     prefix, tail = ("", tmpl.replace("{{PACK}}", json.dumps(pack, ensure_ascii=False, indent=1)))
+    waited = 0.0
+    if gate is not None:
+        # Charge half the ceiling, not the whole thing. max_tokens is head-room so
+        # that reasoning never truncates the cases; actual output lands well under
+        # it, and billing the ceiling would throttle the run to a third of the
+        # quota the deployment actually has. The gate approximates; the 429 retry
+        # in the provider is the exact backstop.
+        waited = gate.acquire(estimate_tokens(tail, int(spec.get("max_tokens", 8000)), 0.5))
     out = prov.complete(system="You are an adversarial QA engineer.", user=tail,
                         cache_prefix=prefix or None, schema=None,
                         max_tokens=spec.get("max_tokens"))
+    held = f" (held {waited:.0f}s)" if waited > 1 else ""
     if out.refused:
         return code, f"REFUSED ({out.refusal_category}) — see docs/ARCHITECTURE.md", 1
     if out.provider == "dryrun":
@@ -179,7 +189,9 @@ def _generate_one(cfg, spec, tmpl, code, pack) -> tuple[str, str, int]:
     dst.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
     n = len(doc.get("cases", []))
     amb = len(doc.get("ambiguities", []) or [])
-    return code, f"{n} cases, {amb} ambiguities -> {dst.name}", 0
+    u = out.usage or {}
+    return code, (f"{n} cases, {amb} ambiguities  "
+                  f"[in {u.get('input_tokens')} out {u.get('output_tokens')}]{held}"), 0
 
 
 def cmd_generate(a) -> int:
@@ -200,10 +212,17 @@ def cmd_generate(a) -> int:
         todo = [(c, pk) for c, pk in todo if not (d / f"{c}.json").exists()]
         if before != len(todo):
             print(f"skipping {before - len(todo)} already generated; {len(todo)} to go")
+    gate = None
+    if a.tpm or a.rpm:
+        from .ratelimit import RateGate
+        gate = RateGate(int(a.tpm or 10 ** 9), int(a.rpm or 10 ** 6), float(a.buffer))
+        print(f"rate gate: {a.tpm} tok/min, {a.rpm} req/min, {int(float(a.buffer)*100)}% buffer "
+              f"-> {gate.tok_budget:,.0f} tok/min usable", flush=True)
+
     rc = 0
     if workers == 1:
         for code, pack in todo:
-            code, msg, r = _generate_one(cfg, spec, tmpl, code, pack)
+            code, msg, r = _generate_one(cfg, spec, tmpl, code, pack, gate)
             rc |= r
             print(f"{code}: {msg}", flush=True)
         return rc
@@ -211,7 +230,7 @@ def cmd_generate(a) -> int:
     from concurrent.futures import ThreadPoolExecutor, as_completed
     done = 0
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(_generate_one, cfg, spec, tmpl, c, pk): c for c, pk in todo}
+        futs = {ex.submit(_generate_one, cfg, spec, tmpl, c, pk, gate): c for c, pk in todo}
         for f in as_completed(futs):
             done += 1
             try:
@@ -384,6 +403,10 @@ def main(argv=None) -> int:
     g.add_argument("--workers", type=int, default=1, help="dispositions to generate concurrently")
     g.add_argument("--skip-existing", action="store_true",
                    help="leave dispositions that already have a case file alone")
+    g.add_argument("--tpm", type=int, help="deployment tokens-per-minute quota")
+    g.add_argument("--rpm", type=int, help="deployment requests-per-minute quota")
+    g.add_argument("--buffer", default=0.30,
+                   help="headroom kept below the quota (0.30 = use 70%%)")
     add("validate", cmd_validate).add_argument("--only", nargs="*")
     cert = add("certify", cmd_certify)
     cert.add_argument("--only", nargs="*")
@@ -394,7 +417,8 @@ def main(argv=None) -> int:
     add("run", cmd_run).add_argument("--check-credentials", action="store_true")
 
     a = ap.parse_args(argv)
-    for attr in ("only", "provider", "check_credentials", "workers", "skip_existing"):
+    for attr in ("only", "provider", "check_credentials", "workers", "skip_existing",
+                 "tpm", "rpm", "buffer"):
         if not hasattr(a, attr):
             setattr(a, attr, None)
     try:
