@@ -81,7 +81,14 @@ def build_all(cfg: Config, tax: Taxonomy, only: list[str] | None = None) -> dict
             "rivals": rivals,
             "quota": {
                 "fn_probes": cfg.get("quota.fn_probes"),
-                "fp_probes": cfg.get("quota.fp_probes"),
+                # The number of FP probes a leaf can support is the number of
+                # rivals its taxonomy actually supplies, not the number we would
+                # like. Asking for five while pinning two is a contradiction the
+                # generator can only resolve by inventing a slot — which then
+                # fails V5 and reads as a model defect rather than a thin
+                # taxonomy. The shortfall and its reasons travel with the pack.
+                "fp_probes": len(alloc["rivals"]),
+                "fp_probes_requested": cfg.get("quota.fp_probes"),
                 "fn_archetypes": cfg.get("quota.fn_archetypes"),
                 "fp_allocation": [
                     {"slot": s["slot"], "archetype": alloc["slots"][s["slot"]]["role"],

@@ -13,12 +13,21 @@ so read the contract before writing.
 
 ## 1. What you are producing
 
-Ten cases for the host disposition named in `pack.engine_code`:
+Cases for the host disposition named in `pack.engine_code`:
 
-- **5 FN probes** — the transcript *is* the host disposition. A grader that
-  returns anything else has produced a false negative.
-- **5 FP probes** — the transcript *looks like* the host disposition but is not.
-  A grader that returns the host disposition has produced a false positive.
+- **`pack.quota.fn_probes` FN probes** — the transcript *is* the host
+  disposition. A grader that returns anything else has produced a false negative.
+- **`pack.quota.fp_probes` FP probes** — the transcript *looks like* the host
+  disposition but is not. A grader that returns the host disposition has produced
+  a false positive.
+
+Read both counts off the pack. **`fp_probes` is often fewer than
+`fp_probes_requested`**: a leaf can only support as many FP probes as its
+taxonomy supplies distinct rivals, and `quota.allocation_notes` says which roles
+went unfilled and why. Write exactly one FP probe per entry in
+`quota.fp_allocation` — no more. Inventing a slot to reach a round number
+produces a probe pinned to nothing, which fails validation and tells you the
+taxonomy is thin in a way the notes already said more clearly.
 
 FP probes are the point of the exercise. An FP probe that is merely "a different
 disposition" tests nothing; the corpus is full of those already. Every FP probe
@@ -60,7 +69,7 @@ markdown fence.
   "source_of_truth_class": "<pack.source_of_truth_class>",
   "anchor": "<pack.anchor>",
   "generated_by": "<model id you are running as>",
-  "cases": [ ... 10 case objects ... ],
+  "cases": [ ... fp_probes + fn_probes case objects ... ],
   "ambiguities": [ ... 0 or more, see §9 ... ]
 }
 ```
@@ -109,10 +118,11 @@ client's own labels.
 
 ## 4. Ordering and identifiers — V2
 
-- `sn` runs `1..10` contiguously.
+- `sn` runs `1..N` contiguously, where N is `fp_probes + fn_probes`.
 - Probe types appear in the order given by `contract.probe_order`. If it is
-  `["FP","FN"]`, SN 1–5 are the FP probes and SN 6–10 the FN probes.
-- `test_case_id` is `<engine_code>-FP-01` … `-FP-05`, `-FN-01` … `-FN-05`.
+  `["FP","FN"]`, the FP probes come first and the FN probes follow.
+- `test_case_id` is `<engine_code>-FP-01` … then `<engine_code>-FN-01` …, each
+  numbered from 01 within its own probe type.
 
 ## 5. FP slots are pinned — V5
 
@@ -269,6 +279,9 @@ Walk each case once more and check, mechanically:
 6. `schedule` — strictly after the anchor, inside the calling window.
 7. If `source_of_truth_class` is `telephony` or `system` — confirm there is no
    transcript.
+
+8. The case count — exactly `fp_probes` FP and `fn_probes` FN, one FP per entry
+   in `quota.fp_allocation`.
 
 A case that fails any of these is rejected by the validator and costs a full
 regeneration. Checking is cheaper.

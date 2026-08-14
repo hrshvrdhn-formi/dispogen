@@ -85,8 +85,11 @@ def validate(cfg: Config, tax: Taxonomy, doc: dict, pack: dict,
                 | {l.group_code for l in tax.leaves}
                 | {cfg.get("taxonomy.abstention_code", "NEEDS_HUMAN_REVIEW")}
                 | {c.get("expected_group", "") for c in cases})
-    fn_n = cfg.get("quota.fn_probes")
-    fp_n = cfg.get("quota.fp_probes")
+    # The PACK is the contract the cases were written against, so the quota is
+    # read from it. Reading the global config instead would demand five FP probes
+    # from a leaf whose taxonomy can only supply two.
+    fn_n = pack["quota"].get("fn_probes", cfg.get("quota.fn_probes"))
+    fp_n = pack["quota"].get("fp_probes", cfg.get("quota.fp_probes"))
     order = cfg.get("inputs.output_format.probe_order", ["FP", "FN"])
     window = cfg.get("inputs.redial_matrix.calling_window", {"start": "09:00", "end": "21:00"})
     w_lo, w_hi = int(window["start"][:2]), int(window["end"][:2])
