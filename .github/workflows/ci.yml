@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -e ".[dev]"
+      # No credentials, and none needed: the suite builds its own toy taxonomy
+      # and never reads context/. A test that needed the client corpus would
+      # fail on every clone but the author's.
+      - run: python -m pytest -q
+
+  no-client-data:
+    # context/ holds real names, phone numbers, policy numbers and call
+    # transcripts. Committing one is a data-protection incident, and .gitignore
+    # only helps until someone uses `git add -f`.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: fail if client documents were committed
+        run: |
+          leaked=$(git ls-files 'context/**' \
+            | grep -vE '^context/(\.gitkeep|README\.md)$' || true)
+          if [ -n "$leaked" ]; then
+            echo "::error::client data committed under context/:"
+            echo "$leaked"
+            exit 1
+          fi
+          echo "context/ is clean"
+      - name: fail if a salt or key was committed
+        run: |
+          if git grep -nE '^(DISPOGEN_DEID_SALT|ANTHROPIC_API_KEY)=.+' \
+               -- ':!*.example' ':!docs/*' ':!*.md'; then
+            echo "::error::a credential appears to be committed"
+            exit 1
+          fi
+          echo "no committed credentials"

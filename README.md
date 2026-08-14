@@ -290,8 +290,24 @@ src/dispogen/
   prescan.py preflight.py validators.py deidentify.py certify.py render.py cli.py
   providers/              base registry + anthropic + dryrun
 tests/                    builds its own toy taxonomy; never reads context/
-docs/ARCHITECTURE.md      the design, and what it deliberately does not claim
+docs/                     see below
 ```
+
+## Documentation
+
+Read in this order on your first onboarding:
+
+| | |
+|---|---|
+| [QUICKSTART.md](QUICKSTART.md) | onboard an agent in about an hour, start to finish |
+| [docs/CONFIG.md](docs/CONFIG.md) | every key in the one file you write, and why it matters |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | organised by what you actually see in the terminal |
+| [docs/RUN_REPORT.md](docs/RUN_REPORT.md) | a real 51-disposition run — costs, timings, what went wrong |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | the design, and what it deliberately does not claim |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | the three extension points; the data-protection rules |
+
+If you are debugging a failing run, go straight to
+[TROUBLESHOOTING](docs/TROUBLESHOOTING.md) — it is indexed by validator ID.
 
 ## Tests
 
@@ -299,5 +315,5 @@ docs/ARCHITECTURE.md      the design, and what it deliberately does not claim
 python -m pytest -q
 ```
 
-The suite builds its own two-group taxonomy workbook. It never reads `context/`,
-so it passes on a fresh clone.
+71 tests. The suite builds its own two-group taxonomy workbook, so it needs no
+credentials and never reads `context/` — it passes on a fresh clone.
