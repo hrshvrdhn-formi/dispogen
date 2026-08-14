@@ -6,6 +6,7 @@
     dispogen packs       --client gcli [--only CODE ...]
     dispogen generate    --client gcli --only CODE [--provider dryrun]
     dispogen validate    --client gcli
+    dispogen transliterate --client gcli    # romanised Hindi -> Devanagari, in place
     dispogen certify     --client gcli          # blind panel + adversarial advocate
     dispogen render      --client gcli
     dispogen run         --client gcli          # preflight -> render
@@ -274,6 +275,63 @@ def cmd_validate(a) -> int:
     return 1 if total else 0
 
 
+def _translit_one(cfg, spec, tmpl, path, gate=None) -> tuple[str, str, int]:
+    from . import translit as tl
+    from .providers import build as build_provider
+    from .ratelimit import estimate_tokens
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    if not tl.needs_work(doc):
+        return path.stem, f"already Devanagari ({tl.deva_ratio(doc):.0%})", 0
+    user = tmpl.replace("{{CASES}}", json.dumps(tl.payload(doc), ensure_ascii=False, indent=1))
+    if gate is not None:
+        gate.acquire(estimate_tokens(user, int(spec.get("max_tokens", 32000)), 0.5))
+    out = build_provider({**spec, "label": f"translit.{path.stem}"}).complete(
+        system="You convert romanised Hindi to Devanagari. You change script, never wording.",
+        user=user, max_tokens=spec.get("max_tokens"), effort=spec.get("effort"))
+    if out.refused:
+        return path.stem, f"REFUSED ({out.refusal_category})", 1
+    if out.provider == "dryrun":
+        return path.stem, f"prompt written -> {out.usage.get('prompt_written_to')}", 0
+    parsed = _extract_json(out.text)
+    if not parsed or "cases" not in parsed:
+        return path.stem, f"UNPARSEABLE ({out.stop_reason}, {len(out.text)} chars)", 1
+    before = tl.deva_ratio(doc)
+    changed, reverted = tl.apply(doc, parsed["cases"])
+    path.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
+    msg = f"{changed} cases converted, {before:.0%} -> {tl.deva_ratio(doc):.0%} Devanagari"
+    if reverted:
+        msg += f"; {len(reverted)} REVERTED ({reverted[0]})"
+    return path.stem, msg, 1 if reverted else 0
+
+
+def cmd_transliterate(a) -> int:
+    """Rewrite romanised Hindi in transcripts as Devanagari, in place."""
+    cfg = _cfg(a)
+    spec = dict(cfg.get("models.transliterator", cfg.get("models.generator")))
+    if a.provider:
+        spec["provider"] = a.provider
+    tmpl = (cfg.root / "prompts" / "transliterate.md").read_text(encoding="utf-8")
+    paths = [p for p in _cases(cfg) if not a.only or p.stem in a.only]
+    gate = None
+    if a.tpm or a.rpm:
+        from .ratelimit import RateGate
+        gate = RateGate(int(a.tpm or 10 ** 9), int(a.rpm or 10 ** 6), float(a.buffer))
+    rc, done = 0, 0
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    with ThreadPoolExecutor(max_workers=max(1, int(a.workers or 1))) as ex:
+        futs = {ex.submit(_translit_one, cfg, spec, tmpl, p, gate): p for p in paths}
+        for f in as_completed(futs):
+            done += 1
+            try:
+                code, msg, r = f.result()
+            except Exception as e:
+                code, msg, r = futs[f].stem, f"ERROR {type(e).__name__}: {e}", 1
+            rc |= r
+            print(f"[{done}/{len(paths)}] {code}: {msg}", flush=True)
+    print("\nre-run `dispogen validate` — V9/V11 check the spans this rewrote")
+    return rc
+
+
 def cmd_certify(a) -> int:
     cfg = _cfg(a)
     from . import certify as certmod
@@ -365,6 +423,9 @@ def cmd_render(a) -> int:
     out = cfg.root / "output" / f"{cfg.name}_TestCases.xlsx"
     render.build(cfg, docs, register, manifest, findings, gates, out)
     print(f"WROTE {out}")
+    csv_out = render.write_csv(cfg, docs, cfg.root / "output" / f"{cfg.name}_TestCases.csv")
+    n = sum(len(d.get("cases", [])) for d in docs)
+    print(f"WROTE {csv_out}  ({n} cases across {len(docs)} dispositions)")
     return 0
 
 
@@ -408,6 +469,14 @@ def main(argv=None) -> int:
     g.add_argument("--buffer", default=0.30,
                    help="headroom kept below the quota (0.30 = use 70%%)")
     add("validate", cmd_validate).add_argument("--only", nargs="*")
+    tr = add("transliterate", cmd_transliterate)
+    tr.add_argument("--only", nargs="*")
+    tr.add_argument("--provider")
+    tr.add_argument("--workers", type=int, default=1)
+    tr.add_argument("--tpm", type=int)
+    tr.add_argument("--rpm", type=int)
+    tr.add_argument("--buffer", default=0.30)
+
     cert = add("certify", cmd_certify)
     cert.add_argument("--only", nargs="*")
     cert.add_argument("--provider", help="override the panel provider (e.g. dryrun)")

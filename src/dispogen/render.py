@@ -139,26 +139,53 @@ def contract_columns(cfg: Config) -> list[str]:
     return [str(c.value).strip() if c.value else "" for c in ws[1]]
 
 
+def case_table(cfg: Config, docs: list[dict]) -> tuple[list[str], list[list]]:
+    """The Test Cases table, as a header and rows.
+
+    The workbook and the CSV are the same table in two containers. Building the
+    rows once is what keeps them from drifting when a column is added to one.
+    """
+    contract = contract_columns(cfg)
+    cmap = cfg.get("render.contract_map", {}) or {}
+    appended = cfg.get("render.appended_columns")
+    rows = []
+    for d in docs:
+        for c in d["cases"]:
+            row = [RESOLVERS.get(cmap.get(col, "blank"), RESOLVERS["blank"])(c, d, cfg)
+                   for col in contract]
+            row += [APPENDED[a](c, d) if a in APPENDED else "" for a in appended]
+            rows.append(row)
+    return contract + appended, rows
+
+
+def write_csv(cfg: Config, docs: list[dict], out_path: Path) -> Path:
+    import csv as _csv
+    header, rows = case_table(cfg, docs)
+    # utf-8-sig: Excel on Windows reads a plain UTF-8 CSV as cp1252 and renders
+    # every Devanagari transcript as mojibake. The BOM is what makes it open
+    # correctly by double-click, which is how this file will actually be used.
+    with out_path.open("w", encoding="utf-8-sig", newline="") as fh:
+        w = _csv.writer(fh, quoting=_csv.QUOTE_ALL)
+        w.writerow(header)
+        for r in rows:
+            w.writerow(["" if v is None else str(v) for v in r])
+    return out_path
+
+
 def build(cfg: Config, docs: list[dict], register: dict, manifest: dict,
           prescan_findings: list[dict], gates: list[list], out_path: Path) -> Path:
     contract = contract_columns(cfg)
-    cmap = cfg.get("render.contract_map", {}) or {}
     appended = cfg.get("render.appended_columns")
     wb = openpyxl.Workbook()
 
     # ---------------- Sheet 1 : Test Cases -------------------------------
     ws = wb.active
     ws.title = "Test Cases"
-    ws.append(contract + appended)
+    header, rows = case_table(cfg, docs)
+    ws.append(header)
     _style_header(ws, len(contract) + len(appended), len(contract))
-    for d in docs:
-        for c in d["cases"]:
-            row = []
-            for col in contract:
-                fn = RESOLVERS.get(cmap.get(col, "blank"), RESOLVERS["blank"])
-                row.append(fn(c, d, cfg))
-            row += [APPENDED[a](c, d) if a in APPENDED else "" for a in appended]
-            ws.append(row)
+    for row in rows:
+        ws.append(row)
     _widths(ws, [5, 8, 22, 26, 38, 52, 90, 24, 22, 30, 40] +
             [30, 9, 24, 13, 26, 28, 30, 22, 10, 26, 46, 52, 70, 12, 16, 46, 46, 66, 46, 46, 26])
     grade_col = len(contract) + appended.index("certification_grade") + 1

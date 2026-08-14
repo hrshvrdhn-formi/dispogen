@@ -132,14 +132,36 @@ you want to scope with `--only` while iterating.
 | `packs` | Build one self-contained generation pack per leaf, with rivals pinned by role. |
 | `generate` | Author cases. `--provider dryrun` emits prompts without calling a model. |
 | `validate` | V1–V16, deterministic. No model runs. |
+| `transliterate` | Rewrite romanised transcripts in the local script, in place. |
 | `certify` | Gate D: blind critic panel, unanimity-or-demote, then adversarial advocate. |
 | `scan-pii` | Harvest real identifiers from `context/`, report any that reached the output. |
 | `scrub` | De-identify existing cases in place, deterministically. |
-| `render` | Build the client-format workbook. |
+| `render` | Build the client-format workbook **and a flat CSV of every case**. |
 | `run` | preflight → compile → prescan → packs → validate → render. |
 
 Add `--only <ENGINE_CODE> ...` to scope `packs`, `generate`, `validate`,
-`certify` and `render` to specific dispositions.
+`transliterate`, `certify` and `render` to specific dispositions.
+
+`generate` and `transliterate` take `--workers`, plus `--tpm` / `--rpm` /
+`--buffer` to stay inside a deployment's quota. A fan-out's binding constraint is
+the burst when requests start, not the sustained draw — fifty packs firing at
+once is ~1M input tokens in one instant. `--skip-existing` makes a partial run
+resumable.
+
+### Script normalisation
+
+Models asked for Hinglish tend to write romanised Hindi, while production ASR
+emits Devanagari. `transliterate` converts the script without touching wording.
+
+It also rewrites `decisive_evidence` and `trap_phrase` in lockstep, because those
+are verbatim substrings of the transcript and V9/V11 check them by exact
+containment — converting the transcript alone silently invalidates every case it
+touches. Each case is re-verified locally and **reverted** if its spans stop
+resolving: a case that keeps its Latin script is a cosmetic defect, one whose
+rule-trace no longer resolves is a broken test.
+
+Re-run `scan-pii` afterwards. Converting a romanised name to Devanagari can make
+it collide with a real name in the corpus that the Latin form never matched.
 
 ---
 
