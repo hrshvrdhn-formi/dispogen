@@ -1,0 +1,221 @@
+{
+ "scope": "Dispositions 0011 / 0012 / 0013 (CTP > 0010 Payment Submitted)",
+ "run_anchor": "Tue 07 Jul 2026, 14:32",
+ "sources": [
+  "Phase 1 static ambiguity pre-scan (62 findings across the full taxonomy; entries below are those touching this batch)",
+  "Adversarial advocate rejections during generation",
+  "Verified-error corpus, class H (contested gold)",
+  "Boundary collisions discovered while authoring the 30 cases"
+ ],
+ "entries": [
+  {
+   "id": "AMB-0012-A1", "class": "A", "class_name": "Definitional gap",
+   "subject": "0012 trigger \"office jaake de diya\" does not name a channel",
+   "competing": [
+    {"code": "0012", "clause": "TRIGGERS: \"branch mein jama kar diya\", \"office jaake de diya\", \"branch counter par pay kiya\"."},
+    {"code": "0010", "clause": "LEAF RULE: pick a leaf 0011-0018 ONLY if the customer explicitly names the channel. If the channel is not named, STOP AT 0010."}
+   ],
+   "why_unresolved": "The trigger list treats the bare word 'office' as sufficient to name the GC branch channel, but 'office' in Hindi conversation routinely denotes the customer's own workplace, a bank office, or any counter. The LEAF RULE simultaneously requires the channel to be EXPLICITLY named. A transcript containing the literal trigger can therefore satisfy the leaf and fail the sub rule at the same time.",
+   "evidence": "SUBMITTED_TO_GC_BRANCH-FP-03: customer utters the exact trigger, then cannot say which office when probed.",
+   "production_frequency": "Not directly observed in the 241 sampled interactions; latent because phrase-list matching will fire on any occurrence.",
+   "proposed_amendment": "Qualify the trigger: \"office jaake de diya\" -> \"[Generali/GC/aapke] office jaake de diya\". Add to Decision Rules: 'IF \"office\" is used without identifying it as a Generali Central premises, the channel is NOT named -> stop at 0010.'",
+   "blast_radius": "0012 only. No other leaf lists an unqualified premises noun."
+  },
+  {
+   "id": "AMB-0012-A2", "class": "A", "class_name": "Definitional gap",
+   "subject": "\"branch\" is polysemous across 0012 and 0013 but the trigger lists are unqualified",
+   "competing": [
+    {"code": "0012", "clause": "TRIGGERS: \"branch mein jama kar diya\", \"office jaake de diya\", \"branch counter par pay kiya\"."},
+    {"code": "0013", "clause": "NOT THIS: deposited at their own BANK rather than a GC branch -> 0013."}
+   ],
+   "why_unresolved": "'branch mein jama kar diya' is the single most natural way for an Indian customer to describe depositing at their own bank branch. The exclusion exists in prose but the trigger list is what phrase-matching consumes, so the default firing is wrong more often than right.",
+   "evidence": "SUBMITTED_TO_GC_BRANCH-FP-02: the exact 0012 trigger is uttered about an SBI branch.",
+   "production_frequency": "Structural. Every bank-channel payment described in Hindi is a candidate.",
+   "proposed_amendment": "Change the 0012 trigger to \"[GC/Generali] branch mein jama kar diya\" and add a mandatory disambiguation probe to the agent flow: when 'branch' is heard, ask 'हमारी branch में या अपने bank में?' before dispositioning.",
+   "blast_radius": "0012, 0013, 0023, 0024. Four leaves share the branch/bank surface."
+  },
+  {
+   "id": "AMB-0013-A3", "class": "A", "class_name": "Definitional gap",
+   "subject": "Funding source is not a channel, but 0013's trigger \"transfer kar diya account se\" reads as one",
+   "competing": [
+    {"code": "0013", "clause": "TRIGGERS: \"bank mein jama kar diya\", \"NEFT kar diya\", \"cheque bank mein daala\", \"transfer kar diya account se\"."},
+    {"code": "0014", "clause": "NOT THIS: paid through the payment link or app, even if funded from a bank account -> 0014."}
+   ],
+   "why_unresolved": "Almost every digital payment is funded from a bank account, so customers describe link and app payments as money leaving their account. The 0014 exclusion is correct but sits inside 0013's prose, while the trigger list actively invites the wrong firing.",
+   "evidence": "SUBMITTED_VIA_BANK-FP-02 (app payment described as 'transfer kar diya account se') and SUBMITTED_VIA_BANK-FP-03 (funding bank named, channel unknown).",
+   "production_frequency": "Structural and high. Applies to every UPI, card and net-banking payment made through the link.",
+   "proposed_amendment": "Add to both 0013 and 0014: 'The FUNDING SOURCE is never the channel. Name the instrument the customer operated (branch counter / NEFT form / net banking transfer / payment link / app), not the account the money left.'",
+   "blast_radius": "0013, 0014, 0018, 0024, 0025."
+  },
+  {
+   "id": "AMB-0010-A4", "class": "A", "class_name": "Definitional gap",
+   "subject": "No rule covers a third party REPORTING a completed payment (only a third party COMMITTING one)",
+   "competing": [
+    {"code": "0072", "clause": "NOT this sub: the third party themselves commits that the premium will be paid -> 0020."},
+    {"code": "0011", "clause": "WHAT IT MEANS: The customer's own words establish that the renewal premium has either already been paid, or will be paid."}
+   ],
+   "why_unresolved": "The 0070 sub tells you what to do when a relative COMMITS to pay, but is silent when a relative REPORTS that the policyholder already paid. The CTP group description resolves it indirectly ('the customer's own words'), but that inference is two levels away from where the classifier is looking, and the observed production errors show it is not being made.",
+   "evidence": "Verified errors 21-07-26#65 (engine 0071, human 0072) and 30-07-2026#3 (engine 0061, human 0072) are both third-party-answered calls mis-routed. Probed by FP-04 in all three dispositions in this batch.",
+   "production_frequency": "2 of 17 annotated errors (12%) involve a third party on the line being mis-dispositioned.",
+   "proposed_amendment": "Add to the 0070 sub (both branches): 'NOT this sub -> only if the third party COMMITS. A third party REPORTING a payment the policyholder allegedly made is hearsay: it does not establish CTP. Stay at 0071/0072 and carry the claim forward for verification.'",
+   "blast_radius": "0071, 0072, 0074, and every CTP leaf reachable by hearsay."
+  },
+  {
+   "id": "AMB-0010-A5", "class": "A", "class_name": "Definitional gap",
+   "subject": "A payment executed by a family member on the policyholder's behalf has no owning rule",
+   "competing": [
+    {"code": "0010", "clause": "The customer states, in the PAST TENSE, that the renewal premium for the current cycle has already been handed over, deposited, transferred or auto-debited."},
+    {"code": "Needs Human Review", "clause": "Legitimate triggers: unintelligible audio, contradictory statements from two speakers on the line, or a real outcome the taxonomy does not cover."}
+   ],
+   "why_unresolved": "When the policyholder is on the line but says 'my son did it and I do not know how', the claim IS in the customer's own words, so CTP holds, but the channel is unknowable to him. Stop-at-0010 handles it, yet nothing in the taxonomy states that a delegated payment is still the customer's claim. Left implicit, engines split between 0010, a guessed leaf, and 0017.",
+   "evidence": "SUBMITTED_TO_ADVISOR-FP-03 and SUBMITTED_VIA_BANK-FP-03.",
+   "production_frequency": "Not separately annotated, but 'bete ne kiya' / 'munshi ne kiya' patterns appear in the sampled Hindi transcripts.",
+   "proposed_amendment": "Add to sub 0010: 'A payment the policyholder reports as executed on their behalf by a household member IS the customer's claim and books 0010. If the policyholder cannot name the channel, STOP AT 0010 - do not infer the channel from who executed it.'",
+   "blast_radius": "0010 sub and all nine of its leaves."
+  },
+  {
+   "id": "AMB-0011-A6", "class": "A", "class_name": "Definitional gap",
+   "subject": "Hindi habitual aspect embeds the perfective trigger string verbatim",
+   "competing": [
+    {"code": "0011", "clause": "TRIGGERS: \"agent ko de diya\", \"advisor ko cheque de diya\", \"unhone le liya paise\"."},
+    {"code": "0022", "clause": "NOT THIS: promise to give it to the advisor later -> 0022."}
+   ],
+   "why_unresolved": "'agent ko de diya karta hoon' means 'I habitually give it to the agent' and is a statement about custom, not about this cycle. It contains the trigger 'agent ko de diya' as an exact substring. Any phrase-list matcher fires on it, and the taxonomy has no aspect guidance.",
+   "evidence": "SUBMITTED_TO_ADVISOR-FP-01.",
+   "production_frequency": "Latent. Habitual '-a karta hoon' is common in older Hindi speakers describing annual premium routines.",
+   "proposed_amendment": "Add a cross-cutting note to sub 0010: 'Aspect governs. \"de diya\" followed by a form of karna (de diya karta hoon / de diya karte hain) is HABITUAL, not perfective, and describes custom rather than this cycle. Scan for the cycle reference before booking 0010.'",
+   "blast_radius": "All of 0011-0018; the construction generalises to every channel verb."
+  },
+  {
+   "id": "AMB-0010-A7", "class": "A", "class_name": "Definitional gap",
+   "subject": "Leaf triggers do not carry the sub's current-cycle qualifier",
+   "competing": [
+    {"code": "0012", "clause": "TRIGGERS: \"branch mein jama kar diya\", \"office jaake de diya\", \"branch counter par pay kiya\"."},
+    {"code": "0023", "clause": "the renewal premium for the current cycle has already been handed over"}
+   ],
+   "why_unresolved": "The sub scopes payment to the CURRENT cycle. None of the nine leaf trigger lists repeat that scope. A customer describing last year's branch payment satisfies the leaf trigger verbatim while failing the sub.",
+   "evidence": "SUBMITTED_TO_GC_BRANCH-FP-01: the trigger is literally true, about the previous cycle, while this cycle is still planned.",
+   "production_frequency": "Latent and likely under-detected, since a wrong 0012 looks like a correct conversion and suppresses the lead.",
+   "proposed_amendment": "Append to every 0011-0018 Decision Rules block: 'The payment must be for the CURRENT cycle. A past-cycle payment described in the perfective does not book this leaf; scan for pichli baar / last year / previous premium.'",
+   "blast_radius": "All nine leaves of sub 0010. Highest business impact of any entry here: a false 0012 removes a live lead from the dialer."
+  },
+  {
+   "id": "AMB-0010-B1", "class": "B", "class_name": "Level ambiguity",
+   "subject": "0011 / 0012 / 0013 all inherit a stop-at-parent rule, so leaf-level expectations are conditional",
+   "competing": [
+    {"code": "leaf 0011/0012/0013", "clause": "The premium has already been paid in person at a Generali Central / GCLI branch office."},
+    {"code": "0010", "clause": "LEAF RULE: pick a leaf 0011-0018 ONLY if the customer explicitly names the channel. If the channel is not named, STOP AT 0010."}
+   ],
+   "why_unresolved": "This is not a defect - it is the taxonomy working - but it means every leaf-graded test case for this sub is only valid while the channel is explicitly named, and 48 of 106 gold labels historically grade at sub level. Any suite that expects a leaf by default will manufacture false failures.",
+   "evidence": "3 of the 30 cases in this batch (one per disposition) certify at SUB rather than EXPANDED by design.",
+   "production_frequency": "48 of 106 gold labels (45%) grade at sub level per the taxonomy's own README.",
+   "proposed_amendment": "None to the taxonomy. Amendment is to the CONSUMER: the classifier must be able to return a sub-level answer, and the scoring harness must treat a correct sub with a null leaf as a pass, not a partial.",
+   "blast_radius": "Scoring harness and classifier output contract, not the definitions."
+  },
+  {
+   "id": "AMB-XCUT-C1", "class": "C", "class_name": "Label / parent collision",
+   "subject": "Sub label 0070 exists under both CIP and NC with different engine codes",
+   "competing": [
+    {"code": "NRPC_CIP", "clause": "The contrast with the CIP branch of 0070 is RELATIONSHIP: if the receiver acknowledges knowing the policyholder, it is CIP (0071/0072); if they deny any connection, it is NC (0074)."},
+    {"code": "NRPC_NC", "clause": "WHAT IT MEANS: The number reached does NOT belong to the policyholder."}
+   ],
+   "why_unresolved": "Both branches are numerically '0070'. Any annotation, rule reference or engine output that names the sub by number alone is unresolvable. 0074's own Decision Rules point at 0071/0072, which live under the other parent.",
+   "evidence": "Verified error 21-07-26#31: the human annotator wrote 'it should be 0070 - No Right Party Contact not FDC' - and the transcript ('निशा जी को हम नहीं जानते') actually supports the NC branch (0074), not the CIP branch they appear to mean. The gold label is unusable as written.",
+   "production_frequency": "1 of 17 annotated errors is itself unresolvable because of this collision.",
+   "proposed_amendment": "Re-label the NC branch to '0075 - No Right Party Contact (NC)' or key all references on engine_code. Until then, forbid sub-level-only annotation for 0070 in the QA sheet.",
+   "blast_radius": "0071, 0072, 0074, plus every FP-4 probe in this batch which uses 0072 as the out-of-class rival."
+  },
+  {
+   "id": "AMB-XCUT-C2", "class": "C", "class_name": "Label / parent collision",
+   "subject": "Numeric label 0050 is used at two different levels",
+   "competing": [
+    {"code": "LANG_REROUTE_REGIONAL", "clause": "WHAT IT MEANS: The conversation cannot continue because the customer does not speak a language the agent can offer"},
+    {"code": "POLICY_NOT_APPLIED", "clause": "CODE COLLISION: the numeric label '0050' is used both here (an expanded disposition under 0040) and as the sub-disposition '0050 - Language Barrier' under CIP."}
+   ],
+   "why_unresolved": "Acknowledged in the source file's own engineering note and deliberately left in place for engine compatibility. Any regex extraction of rival codes must disambiguate by level.",
+   "evidence": "Detected by the Phase 1 pre-scan without prompting; the confusion-graph builder resolves '0050' to the leaf first, then to a same-group sub.",
+   "production_frequency": "Not observed in this batch, but affects rival extraction taxonomy-wide.",
+   "proposed_amendment": "Re-label to '004C - Policy not applied', as the source file itself recommends.",
+   "blast_radius": "Confusion-graph construction for all 52 leaves."
+  },
+  {
+   "id": "AMB-XCUT-D1", "class": "D", "class_name": "Source-of-truth conflict",
+   "subject": "Customer claims payment while system status already shows the cycle paid",
+   "competing": [
+    {"code": "0010", "clause": "The claim does NOT need to reconcile against payfile or LifeAsia to book 0010."},
+    {"code": "0111", "clause": "NOT 0010: the SYSTEM shows the cycle as paid and the customer never claims it -> 0110."}
+   ],
+   "why_unresolved": "0110 is specified for the case where the system shows paid AND the customer never claims it. The taxonomy does not say what happens when the system shows paid AND the customer also claims it - which is the common case on a well-timed call. A transcript-only classifier cannot see the system state at all.",
+   "evidence": "Pre-scan class D finding on 0111. Not exercised in this batch because all three leaves are transcript-derivable and pre-call status was InForce with a live due date.",
+   "production_frequency": "Unmeasured; requires joining pre-call status to disposition, which the current QA sheets do not do.",
+   "proposed_amendment": "Add to 0110: 'If system status shows paid AND the customer also claims payment, book 0110 - system source of truth wins. 0010 is for a customer claim the system has not yet confirmed.'",
+   "blast_radius": "0010 sub, 0110 sub, 0019."
+  },
+  {
+   "id": "AMB-XCUT-E1", "class": "E", "class_name": "Unranked co-occurrence",
+   "subject": "REVIEW's trigger list and its ordering rule contradict each other on two-speaker contradictions",
+   "competing": [
+    {"code": "Needs Human Review", "clause": "Legitimate triggers: unintelligible audio, contradictory statements from two speakers on the line, or a real outcome the taxonomy does not cover."},
+    {"code": "Group-level stop", "clause": "USE ONLY after group-level assignment has been attempted and failed."}
+   ],
+   "why_unresolved": "'Contradictory statements from two speakers' is listed as a legitimate REVIEW trigger. But if both speakers are arguing about WHETHER the premium was paid, affirmative payment intent is present under either account, so group-level assignment succeeds and the ordering rule forbids REVIEW. The two clauses give opposite answers on the same transcript.",
+   "evidence": "SUBMITTED_TO_ADVISOR-FP-05 is built precisely on this tension and expects CTP at group level with NEEDS_HUMAN_REVIEW in must_not_select.",
+   "production_frequency": "Latent. Speakerphone households are common in the sampled data.",
+   "proposed_amendment": "Qualify the REVIEW trigger: 'contradictory statements from two speakers on the line, WHERE THE CONTRADICTION PREVENTS EVEN GROUP-LEVEL ASSIGNMENT. If the speakers disagree only about which leaf or sub applies, stop at the group instead.'",
+   "blast_radius": "REVIEW group; every disposition reachable from a multi-speaker call."
+  },
+  {
+   "id": "AMB-XCUT-I1", "class": "I", "class_name": "Degenerate leaf",
+   "subject": "0017 is a declared catch-all sibling of every leaf in this batch",
+   "competing": [
+    {"code": "0017", "clause": "USE ONLY as a last resort AFTER 0011-0016 and 0018 have each been ruled out on named evidence."},
+    {"code": "0010", "clause": "IF the channel is simply not stated, do NOT default here - stop at 0010."}
+   ],
+   "why_unresolved": "Not unresolved in the rules - the rules are clear - but 0017 is the natural attractor for exactly the transcripts that should stop at 0010, and its over-selection is itself the bug under test. Every stop-at-parent probe in this batch names 0017 in must_not_select for that reason.",
+   "evidence": "All three FP-03 cases list 0017 alongside the host code in must_not_select.",
+   "production_frequency": "Not observed in the 241 sampled interactions - no 0017 was assigned, which may itself indicate under-use rather than correct use.",
+   "proposed_amendment": "None to the definition. Add a monitoring rule: alert if 0017 volume exceeds 2% of sub-0010 assignments, and alert if it is 0% over a full cycle (suggesting the channel probe is never running).",
+   "blast_radius": "Sub 0010."
+  },
+  {
+   "id": "AMB-GOLD-H1", "class": "H", "class_name": "Annotation conflict",
+   "subject": "12 of 17 rows in the verified-error corpus carry a contested or unresolvable gold label",
+   "competing": [
+    {"code": "human gold", "clause": "The customer has given an EXPLICIT, NAMED reason for refusing or ending the relationship"},
+    {"code": "rules as written", "clause": "a soft \"not interested\" with no reason -> prefer 0061 (call back) or 0032 if money was implied."}
+   ],
+   "why_unresolved": "The Phase 1 pre-scan flagged 12 of the 17 rows without being told which were contested. Failure modes: 3 rows name no resolvable disposition code at all ('Call-back', 'call-back'); 1 row names two codes; 6 rows are hedged ('closest leaf', 'or 0020-family', 'better fit'); 1 row names only sub 0070, which exists under two groups; and on 30-07-2026#10 the human's chosen leaf 0044 is excluded by that leaf's own sub, which routes a bare 'not interested' to 0061 instead.",
+   "evidence": "compiled/ambiguity_prescan.json, class H, 12 entries.",
+   "production_frequency": "12 of 17 (71%) of the corpus that v1 of the architecture proposed to pin as ground truth.",
+   "proposed_amendment": "Do not pin the corpus as gold. Pin the TRANSCRIPT and the FACT OF CONFUSION (which is what drives empirical rival ranking, and is genuinely high-value), then re-derive the label through the same certification gate as every synthetic case. Separately, re-annotate the 12 contested rows with a code-level answer and a clause citation.",
+   "blast_radius": "The whole suite. This is the largest single false-positive vector in the v1 design.",
+   "note": "None of the 17 rows involve 0011/0012/0013 directly, so no gold is pinned into this batch. The entry is recorded here because the empirical rival tier (T1) draws on this corpus taxonomy-wide."
+  },
+  {
+   "id": "AMB-ADV-R1", "class": "F", "class_name": "Evidence insufficiency (generation defect, regenerated)",
+   "subject": "First draft of SUBMITTED_TO_ADVISOR-FP-05 was mislabelled by the generator",
+   "competing": [
+    {"code": "CTP (as drafted)", "clause": "is there any affirmative payment intent anywhere in the customer"},
+    {"code": "0022 (advocate's answer)", "clause": "TRIGGERS: \"agent ko de dunga\", \"advisor aayenge to de denge\", \"mera agent handle karta hai, unhi ko dunga\"."}
+   ],
+   "why_unresolved": "Resolved, not unresolved. The draft had the customer say 'अभी दिया नहीं है, देना है' - a clear retraction plus a forward intention with the advisor channel already named. That is decidable as 0022, so a GROUP expectation was simply wrong. The adversarial advocate produced this counter-citation and the case was exiled and regenerated as a two-speaker contradiction.",
+   "evidence": "logs/advocate_rejections.json",
+   "production_frequency": "n/a - generator defect.",
+   "proposed_amendment": "None. Recorded so the rejection is auditable and so the learnings entry ('an under-determined probe must destroy the discriminating feature, not merely complicate it') has evidence.",
+   "blast_radius": "n/a", "resolution": "regenerated and re-certified"
+  },
+  {
+   "id": "AMB-ADV-R2", "class": "F", "class_name": "Evidence insufficiency (generation defect, regenerated)",
+   "subject": "First draft of SUBMITTED_TO_GC_BRANCH-FP-05 was resolvable by Hindi ergative marking",
+   "competing": [
+    {"code": "CTP (as drafted)", "clause": "is there any affirmative payment intent anywhere in the customer"},
+    {"code": "0012 (advocate's answer)", "clause": "The customer states, in the PAST TENSE, that the renewal premium for the current cycle has already been handed over"}
+   ],
+   "why_unresolved": "Resolved, not unresolved. The draft read 'मैंने तो branch mein jama kar </interrupted>'. The ergative 'मैंने' forces a perfective continuation in Hindi, so the truncation did not actually destroy the tense and a competent Hindi reader resolves it to 0012. The subject marker was removed and the case re-certified.",
+   "evidence": "logs/advocate_rejections.json",
+   "production_frequency": "n/a - generator defect.",
+   "proposed_amendment": "None to the taxonomy. Add to learnings: 'in ergative-marked languages, truncating a verb does not remove aspect if a case marker upstream still forces it - a truncation probe must cut before the marker, not after.'",
+   "blast_radius": "n/a", "resolution": "regenerated and re-certified"
+  }
+ ]
+}

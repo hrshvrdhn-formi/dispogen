@@ -1,0 +1,204 @@
+# Client binding: GCLI Persistency (Anika, outbound life-insurance renewal voice agent).
+#
+# THIS FILE IS THE ONLY THING AN FDE WRITES TO ONBOARD A NEW AGENT.
+# Copy it to config/clients/<your-agent>.yaml, point the paths at your documents,
+# and adjust the blocks below. No Python edits.
+
+client:
+  name: gcli-persistency
+  display_name: "GCLI Persistency — Anika"
+  language: hinglish            # affects nothing structural; documents the corpus
+  anchor: "Tue 07 Jul 2026, 14:32"   # re-dial anchor; must match your matrix
+
+inputs:
+  taxonomy:
+    path: context/disposition_definitions.xlsx
+    sheet: "Disposition Master"
+    # Column names are read from row 1 and matched exactly. Rename here, not in code.
+    columns:
+      group:            "Group Disposition"
+      group_desc:       "Group Disposition Description"
+      sub:              "Sub Disposition"
+      sub_desc:         "Sub Disposition Description"
+      expanded:         "Expanded Disposition"
+      expanded_desc:    "Expanded Disposition Description"
+      decision_rules:   "Decision Rules - Triggers / Exclusions / Tie-breakers"
+      engine_code:      "Engine Code (rules_json key)"
+      engineering_note: "Engineering Note / Risk"
+    forward_fill: [group, group_desc, sub, sub_desc]
+
+  output_format:
+    path: context/disposition_definitions.xlsx
+    sheet: "Output Format"
+    # The column contract is READ from row 1 of this sheet. Nothing to declare.
+    probe_type_column: "Type"
+    probe_type_values:
+      FP: "Regression Test case for False Positives"
+      FN: "Regression Test case for False Negatives"
+    probe_order: [FP, FN]        # this client puts FP in SN 1-5, FN in 6-10
+
+  redial_matrix:
+    path: context/redial_test_matrix.xlsx
+    sheet: "Re-Dial Test Matrix"
+    logic_sheet: "Scheduling Logic"
+    code_column: "Expanded Disposition"
+    calling_window: {start: "09:00", end: "21:00"}
+
+  interaction_report:
+    path: context/interaction_report.xlsx
+    # Sheets carrying human annotations. Add a sheet, get its errors mined — no code change.
+    annotated_sheets: ["21-07-26", "22-07-2026", "24-07-2026", "28-07-2026", "30-07-2026"]
+    transcript_column: transcript
+    label_columns:      [after_extended_disposition, after_sub_disposition, after_disposition]
+    confidence_columns: [after_extended_disposition_confidence]
+    # Any column whose name starts with one of these marks a human correction.
+    annotation_column_prefixes: [discrepancy, actual, Actual_]
+    # Excluded from the mined field set: it is the field under test.
+    leakage_blocklist: [lead_stage_computed]
+
+  system_prompt:
+    path: context/system_prompt.md
+    slice_heading_regex: '^#{1,3} .+$'
+
+  # Optional extra corpora. Each is mined for seeds if a mapping is given.
+  extras:
+    - name: config_design
+      path: context/config_design.xlsx
+      sheets:
+        uat:        {sheet: "UAT", id_column: "Test Case ID", expected_column: "Expected Outcome"}
+        objections: {sheet: "Objection Handling Scenarios"}
+        faq:        {sheet: "FAQ  KB"}
+        params:     {sheet: "Pre-Call Parameters", name_column: "Variable Name"}
+
+taxonomy:
+  # Matches this client's code shapes, including the 3-digit 091/092 outliers.
+  code_regex: '\b(0[0-9][0-9A-F]{2}|09[12])\b'
+  abstention_code: NEEDS_HUMAN_REVIEW
+  # Keyword -> source-of-truth class. Decides what a test case for a leaf even looks like.
+  source_of_truth_rules:
+    - {match: "cross-call code",                    class: cross-call}
+    - {match: "telephony",                          class: telephony}
+    - {match: "carrier response",                   class: telephony}
+    - {match: "source of truth: pre-call system status", class: system}
+  source_of_truth_default: transcript
+  # Leaves whose class the rules cannot infer.
+  source_of_truth_overrides:
+    NO_RESPONSE: hybrid
+    NEEDS_HUMAN_REVIEW: abstention
+  # Third-party-answered codes. Any transcript-derivable leaf can be voiced by a
+  # non-policyholder, so these are always available as an out-of-class rival.
+  speaker_identity_rivals: ["0072", "0071", "0074"]
+
+transcripts:
+  # Tried in order. First match wins. `pyrepr` is single-quoted Python repr —
+  # json.loads throws on it. Add a decoder here, not in code.
+  decoders: [pyrepr, json, flat_assistant_user, flat_agent_customer, flat_title_case]
+  speaker_labels:
+    flat_assistant_user:  {agent: "ASSISTANT:", customer: "USER:"}
+    flat_agent_customer:  {agent: "AGENT:",     customer: "CUSTOMER:"}
+    flat_title_case:      {agent: "Assistant:", customer: "User:"}
+  null_markers: ["n/a", "null", "none", "-", ""]
+
+tokens:
+  # Extracted from the corpus at preflight, NOT from the system prompt.
+  # This client's prompt documents '[/interrupted]'; production emits '</interrupted>'.
+  # A perturbation using the documented form tests nothing.
+  candidates: ["</interrupted>", "<silence-detected/>", "<end-call-silence-detection/>", "[/interrupted]"]
+  documented_but_not_produced: ["[/interrupted]"]
+
+# Precedence the taxonomy already states. Enforced deterministically so a model
+# never re-litigates a decision the source document already made.
+# `anchor` must appear VERBATIM in the taxonomy or preflight P16 fails — that is
+# how you find out the source document changed under you.
+precedence:
+  - {id: P1,  rule: "Any payment intent outranks any callback request",
+     anchor: 'a call-back request that also contains "pay kar dunga" is CTP, not CIP'}
+  - {id: P2,  rule: "A money reason attached to a deferral outranks the scheduling code",
+     anchor: "THIS CODE OUTRANKS 0061"}
+  - {id: P3,  rule: "A death report overrides relative-answered",
+     anchor: "This code OVERRIDES 0072"}
+  - {id: P4a, rule: "System status beats customer assertion (paid)",
+     anchor: "Do not assign from customer speech alone"}
+  - {id: P4b, rule: "System status beats customer assertion (inactive)",
+     anchor: "0049 is the customer's unverified surrender claim"}
+  - {id: P5a, rule: "Channel not named -> stop at the payment-submitted sub",
+     anchor: "If the channel is not named, STOP AT 0010"}
+  - {id: P5b, rule: "Channel not named -> stop at the payment-commitment sub",
+     anchor: "If no channel is named, STOP AT 0020"}
+  - {id: P6,  rule: "Language evidence overrides call brevity",
+     anchor: "The call being short and courteous does NOT downgrade this to 0063"}
+  - {id: P7,  rule: "Relationship acknowledged -> CIP branch; denied -> NC branch",
+     anchor: "if the receiver ACKNOWLEDGES knowing the policyholder in any way, it is CIP"}
+  - {id: P8,  rule: "Zero substantive turns / one pre-purpose turn / identified audio fault",
+     anchor: "THE BOUNDARY vs 0083: 0063 requires SOME customer speech"}
+
+# Agent-behaviour rails that synthetic transcripts must not violate, or the suite
+# teaches the wrong behaviour if it is ever reused to evaluate the agent itself.
+compliance_checks:
+  - id: C9
+    pattern: 'आपका mobile number बता|अपना email बता|email id बता|mobile number confirm कर'
+    why: "agent must not collect mobile/email for the payment link"
+  - id: C5
+    pattern: 'waive कर द|discount दे द|late fee माफ|माफ कर देती हूं'
+    why: "agent must not concede a waiver or discount"
+  - id: AI-DISCLOSURE
+    pattern: 'मैं इंसान हूं|मैं human हूं|मैं bot नहीं'
+    why: "AI disclosure must be honest"
+
+deidentify:
+  # Real identifiers are harvested from these columns across ALL input workbooks
+  # and blocked from appearing in any generated case.
+  harvest:
+    person_names:
+      columns: [lead_name, customer_name, contract_owner_first_name_hin,
+                contract_owner_surname_hin, owner_name_hin, "Contract Owner First Name_Hin",
+                "Contract Owner Surname_Hin", Owner_name_hin]
+      min_length: 3
+    policy_numbers: {columns: [policy_no, policy_uid, policy_id, Policy_No], numeric: true}
+    phone_numbers:  {columns: [contact_id, customer_phone_number, owner_mobile_no,
+                               contact_no, profile_contact_id, Owner_Mobile_No], length: 10}
+    emails:         {columns: [cust_email_id, Cust_Email_ID]}
+  # Synthetic replacements. Deterministic given the salt, so a case keeps a stable
+  # identity across regenerations without ever touching a real record.
+  #
+  # Pick names that do NOT occur in the client corpus. Any that do are dropped at
+  # load with a collision note (and a fully-overlapping pool raises), but a pool
+  # committed to git should not carry a real surname in the first place.
+  pools:
+    surnames_deva: [चौहान, राठौड़, सक्सेना, भारद्वाज, चतुर्वेदी, दीक्षित, महाजन, बिष्ट, सोलंकी, तोमर]
+    givens_deva:   [अनिकेत, वैभव, नंदिनी, हरीश, कल्पना, ऋतुराज, सुमन, तेजस, मीरा, धैर्य]
+    policy_prefix: "09"          # outside the observed real range
+    phone_prefix:  "70000"
+
+render:
+  # Binds each column of THIS client's output-format sheet to a named resolver
+  # in src/dispogen/render.py. Rename a column upstream -> change it here only.
+  # An unmapped column renders blank instead of failing the build.
+  contract_map:
+    "SN":                        sn
+    "Group":                     group_code
+    "Sub ":                      sub_name
+    "Expanded":                  engine_code
+    "Type":                      probe_type_label
+    "Test Case Scenario":        scenario
+    "Generated Transcript":      transcript_text
+    "Is Redial Required":        redial_required
+    "Anchor Date":               anchor
+    "Redial Schedule Date Time": redial_schedule
+    "Transcript New Format":     transcript_json
+
+domain_terms:
+  # The domain-leak lint. A learning that cannot be restated without these is a
+  # domain observation and belongs in the coverage report, not learnings.md.
+  - GCLI
+  - Generali
+  - persistency
+  - premium
+  - policy
+  - ECS
+  - NEFT
+  - Anika
+  - branch
+  - advisor
+  - Hindi
+  - Hinglish

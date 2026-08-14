@@ -1,0 +1,27 @@
+# ---- NEVER COMMIT CLIENT DATA ----------------------------------------------
+# context/ holds the client's own documents: real policyholder names, phone
+# numbers, email addresses, policy numbers, call transcripts. Committing it is a
+# data-protection incident. The repo ships the pipeline, not the corpus.
+context/*
+!context/.gitkeep
+!context/README.md
+
+# Generated artefacts. Regenerable from context/ + config/.
+compiled/
+state/
+logs/
+output/
+learnings/inbox/
+_extract/
+_old/
+
+# ---- standard ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.env
+~$*.xlsx
+.DS_Store

@@ -1,0 +1,1176 @@
+{
+ "engine_code": "SUBMITTED_TO_ADVISOR",
+ "label": "0011 - Submitted To Advisor",
+ "group": "CTP - Committed to Pay",
+ "sub": "0010 - Payment Submitted",
+ "source_of_truth_class": "transcript",
+ "anchor": "Tue 07 Jul 2026, 14:32",
+ "generated_by": "claude-opus-5 (in-session)",
+ "cases": [
+  {
+   "sn": 1,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FP-01",
+   "probe_type": "FP",
+   "slot": "FP-1",
+   "archetype": "nearest_rival_decoy",
+   "scenario": "Customer uses the habitual aspect 'agent ko de diya karta hoon' (I always give it to the agent) and then states this cycle's payment is still to come next week. The perfective-looking string is present; the act is future.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with अनिकेत चतुर्वेदी ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते अनिकेत जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "मैं उम्मीद करती हूँ कि आप हिंदी भाषा में बात करने में comfortable हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "जी बिल्कुल"
+    },
+    {
+     "speaker": "agent",
+     "text": "आगे बढ़ने से पहले बताना चाहती हूं, यह call record की जा रही है internal training and quality purpose के लिए। यह call आपकी policy GC New Assured Wealth, policy number zero one eight six six four one two, के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "आपका premium है पैंतीस हज़ार पाँच सौ दो रुपये, और आपकी due date है सोलह August दो हज़ार छब्बीस। आपके auto-debit register नहीं है, इसलिए payment manually करनी होगी। क्या मैं एक Payment Link share कर दूं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "नहीं नहीं madam, मैं हमेशा agent ko de diya करता हूं, बीस साल से यही चला आ रहा है"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ सकती हूँ। तो क्या इस बार का premium आप उन्हें दे चुके हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे नहीं, इस बार भी उन्हीं को दूंगा, अगले हफ्ते आएंगे तो दे दूंगा"
+    },
+    {
+     "speaker": "agent",
+     "text": "ठीक है अनिकेत जी। तो अगले हफ्ते advisor को premium दे देंगे, सही समझा?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बिल्कुल"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "01866412",
+    "product_name_group": "GC New Assured Wealth",
+    "modal_premium": 35502,
+    "total_premium": 35502,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 4,
+    "no_of_premium_tbp": 6
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0020 - Payment Commitment",
+   "expected_expanded": "0022 - Assured to pay to Advisor",
+   "must_not_select": [
+    "0011"
+   ],
+   "rival_code": "0022",
+   "trap_phrase": "agent ko de diya",
+   "decisive_evidence": "इस बार भी उन्हीं को दूंगा, अगले हफ्ते आएंगे तो दे दूंगा",
+   "cited_clause": "NOT THIS: promise to give it to the advisor later",
+   "rebutted_rivals": [
+    {
+     "code": "0011",
+     "why": "The string 'agent ko de diya' occurs in the habitual construction 'de diya karta hoon' (I customarily give), not as a perfective report of this cycle. The customer then states the act is still to come.",
+     "clause": "NOT THIS: promise to give it to the advisor later"
+    },
+    {
+     "code": "0010",
+     "why": "The channel IS explicitly named (own advisor), so the stop-at-parent rule does not apply; the level is decided, only the tense differs.",
+     "clause": "pick a leaf 0021-0029 ONLY if the customer explicitly names the channel"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "aspect:habitual_vs_perfective"
+   ],
+   "redial": {
+    "is_required": "Yes – confirm after date",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Mon 13 Jul 2026, 11:00",
+    "context": "Advisor route, rough date only ('agle hafte'). First working day of next week at the default 11:00 slot. Confirm whether the advisor collected the premium; if not, re-extract a specific date. Due date 16 Aug is not at risk, so no urgency framing.",
+    "basis": "seeded: 0022 matrix row (no firm date -> default + re-extract); slot per Scheduling Logic rule 6 ('next week') and rule 4 (default 11:00)"
+   }
+  },
+  {
+   "sn": 2,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FP-02",
+   "probe_type": "FP",
+   "slot": "FP-2",
+   "archetype": "structural_trap",
+   "scenario": "Premium already handed over as a cheque, but to a company pickup executive. The customer states outright that they have no advisor of their own - the policy was bought direct.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with देसाई प्रीति ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते देसाई जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "आगे बढ़ने से पहले बताना चाहती हूं, यह call record की जा रही है internal training and quality purpose के लिए। यह call आपकी policy GC Money Back Super Plan, policy number zero nine five three five two three, के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "जी हां, लेकिन मैंने तो payment कर दी है"
+    },
+    {
+     "speaker": "agent",
+     "text": "जानकारी देने के लिए धन्यवाद। क्या आप बता सकती हैं कि किस माध्यम से payment की थी?"
+    },
+    {
+     "speaker": "customer",
+     "text": "आपके office से जो आदमी आए थे ना, उनको cheque de diya था मैंने, परसों"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ गई। क्या वो आपके अपने advisor थे, जिन्होंने policy करवाई थी?"
+    },
+    {
+     "speaker": "customer",
+     "text": "नहीं नहीं, मेरा कोई agent नहीं है, मैंने direct company से ली थी policy online. ये तो pickup वाले भैया थे, receipt भी दे गए"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी देसाई जी, धन्यवाद। मैं यह note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0953523",
+    "product_name_group": "GC Money Back Super Plan",
+    "modal_premium": 50000,
+    "total_premium": 50000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "F",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 3,
+    "no_of_premium_tbp": 7
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0016 - Submitted To GCLI Representative",
+   "must_not_select": [
+    "0011"
+   ],
+   "rival_code": "0016",
+   "trap_phrase": "cheque de diya",
+   "decisive_evidence": "मेरा कोई agent नहीं है, मैंने direct company से ली थी policy online. ये तो pickup वाले भैया थे",
+   "cited_clause": "NOT THIS: handed to a Generali representative who is NOT the customer",
+   "rebutted_rivals": [
+    {
+     "code": "0011",
+     "why": "0011 requires the customer's OWN assigned advisor. The customer explicitly denies having an advisor at all; the receiver was a company pickup executive.",
+     "clause": "NOT THIS: handed to a Generali representative who is NOT the customer"
+    },
+    {
+     "code": "0021",
+     "why": "The pickup has already happened and the cheque changed hands, so this is not a pending pickup request.",
+     "clause": "NOT THIS: a pickup has been requested but not yet happened"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "speaker_identity:policyholder"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Cheque collected by a GCLI pickup executive; reconciliation checks payfile after T+2 working days. If still unpaid, redial gently and open by acknowledging the cheque was handed to the pickup executive; ask for the receipt reference.",
+    "basis": "seeded: 0016 matrix row (T+2 verification-only)"
+   }
+  },
+  {
+   "sn": 3,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FP-03",
+   "probe_type": "FP",
+   "slot": "FP-3",
+   "archetype": "stop_at_parent",
+   "scenario": "Payment is asserted in the past tense but was made by the customer's son. The customer speculates the money 'must have gone to the agent' and, when probed directly, declines to confirm the channel.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with ऋतुराज ओमप्रकाश ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते ऋतुराज जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बताइए"
+    },
+    {
+     "speaker": "agent",
+     "text": "आगे बढ़ने से पहले बताना चाहती हूं, यह call record की जा रही है internal training and quality purpose के लिए। यह call आपकी policy Generali Central Anand, policy number zero nine seven three two one five, के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, पर premium तो जमा हो चुका है"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या आप बता सकते हैं कि payment किस माध्यम से की गई थी?"
+    },
+    {
+     "speaker": "customer",
+     "text": "देखिए वो मेरे बेटे ने किया है, मुझे ठीक से नहीं पता कैसे किया"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ सकती हूँ। क्या आपको कोई अंदाज़ा है, online किया या कहीं जमा किया?"
+    },
+    {
+     "speaker": "customer",
+     "text": "agent ko de diya होगा शायद, वही आते रहते हैं. मुझे ठीक से नहीं पता, बेटा शाम को आएगा"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी ऋतुराज जी, क्या मैं confirm कर लूं — आपने अपने advisor को ही दिया था, या किसी और तरीके से?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे मैंने कहा ना मुझे नहीं पता, बेटे ने किया है, हो गया है बस. आप check कर लीजिए अपने system में"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल, मैं note कर लेती हूँ। धन्यवाद ऋतुराज जी।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0973215",
+    "product_name_group": "Generali Central Anand",
+    "modal_premium": 9713,
+    "total_premium": 9713,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 6,
+    "no_of_premium_tbp": 9
+   },
+   "declared_grade": "SUB",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": null,
+   "must_not_select": [
+    "0011",
+    "0017"
+   ],
+   "rival_code": "0010",
+   "trap_phrase": "agent ko de diya",
+   "decisive_evidence": "अरे मैंने कहा ना मुझे नहीं पता, बेटे ने किया है, हो गया है बस",
+   "cited_clause": "IF the customer says only \"paid\" without naming who received it",
+   "rebutted_rivals": [
+    {
+     "code": "0011",
+     "why": "The trigger string appears only inside the speculative frame 'होगा शायद' (must have, probably). When probed directly the customer twice declines to confirm the receiver. The channel is therefore not explicitly named.",
+     "clause": "pick a leaf 0011-0018 ONLY if the customer explicitly names the channel. If the channel is not named, STOP AT 0010."
+    },
+    {
+     "code": "0017",
+     "why": "0017 is a last-resort channel code and requires named evidence that every other channel was ruled out. Here no channel is named at all, so the stop-at-0010 rule governs instead.",
+     "clause": "IF the channel is simply not stated, do NOT default here - stop at 0010."
+    },
+    {
+     "code": "0020",
+     "why": "The assertion is in the past tense ('जमा हो चुका है', 'हो गया है'), not a forward promise.",
+     "clause": "NOT 0010: any forward-looking promise, however confident"
+    }
+   ],
+   "precedence_rule_applied": "P5a",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:elderly_slow",
+    "evidence:third_party_executed_payment"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Channel unknown, so reconciliation uses the slowest clearing window (T+3) rather than a channel-specific TAT. If still unpaid, redial and open by acknowledging the customer said his son had completed it; ask which channel was used and for a reference number.",
+    "basis": "DERIVED (not seeded): no matrix row exists for sub 0010. Conservative T+3 chosen per the Scheduling Logic note that TAT reflects channel clearing speed and the channel here is unknown."
+   }
+  },
+  {
+   "sn": 4,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FP-04",
+   "probe_type": "FP",
+   "slot": "FP-4",
+   "archetype": "out_of_class",
+   "scenario": "The policyholder's brother answers, reports that the policyholder gave the premium to the agent, states the policyholder is out, and invites a later call. The payment claim is not in the policyholder's own words.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with अनिकेत संजय ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां, संजय भाई ऋतुराजब घर पे नहीं हैं, main unka bhai bol raha hoon"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते सर। यह call अनिकेत जी की policy के premium renewal के बारे में है। क्या आप बता सकते हैं कि उनसे कब बात हो सकती है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे उसका तो हो गया है ना, agent ko de diya था उन्होंने, ऐसा बोल रहे थे"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ सकती हूँ। क्या आपको पता है कब और किसको दिया था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अब वो मुझे कैसे पता, वो खुद ही बताएंगे. मैं तो बस इतना सुना था"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल। तो क्या मैं उनसे बाद में बात कर लूं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां baad mein call kar lena, मैं बता दूंगा उनको"
+    },
+    {
+     "speaker": "agent",
+     "text": "ठीक है सर, धन्यवाद। आपका दिन शुभ हो।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0932689",
+    "product_name_group": "GC Big Dreams",
+    "modal_premium": 29187,
+    "total_premium": 29187,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 2,
+    "no_of_premium_tbp": 13
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CIP - Contact in Pursuit",
+   "expected_sub": "0070 - No Right Party Contact (CIP branch)",
+   "expected_expanded": "0072 - Contacted Relative",
+   "must_not_select": [
+    "0011"
+   ],
+   "rival_code": "0072",
+   "trap_phrase": "agent ko de diya",
+   "decisive_evidence": "main unka bhai bol raha hoon",
+   "cited_clause": "own words establish that the renewal premium has either already been paid, or will be paid",
+   "rebutted_rivals": [
+    {
+     "code": "0011",
+     "why": "CTP requires the customer's own words. The payment claim is hearsay from a brother who explicitly disclaims knowledge ('अब वो मुझे कैसे पता'). The policyholder never spoke on this call.",
+     "clause": "own words establish that the renewal premium has either already been paid, or will be paid"
+    },
+    {
+     "code": "0074",
+     "why": "The receiver acknowledges the relationship rather than denying it, so this is the CIP branch of 0070, not the NC branch.",
+     "clause": "if the receiver ACKNOWLEDGES knowing the policyholder in any way, it is CIP"
+    },
+    {
+     "code": "0061",
+     "why": "The person requesting the later call is not the policyholder. 0061 requires that the policyholder themselves answered and asked for a different time.",
+     "clause": "The policyholder answered, was able to converse, and asked for the call to be made at a different time"
+    }
+   ],
+   "precedence_rule_applied": "P7",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "speaker_identity:relative"
+   ],
+   "redial": {
+    "is_required": "Yes – default",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Wed 08 Jul 2026, 12:30",
+    "context": "Default next-day midday attempt to reach the policyholder directly. Wrong-party contact, so the opening must re-verify identity. C6: no policy specifics were shared with the brother and none may be shared on the retry until identity is confirmed. Carry forward that a relative believes the premium was given to an agent - confirm this with the policyholder rather than treating it as established.",
+    "basis": "seeded: 0072 matrix row (relative answered, no time given -> default next-day 12:30)"
+   }
+  },
+  {
+   "sn": 5,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FP-05",
+   "probe_type": "FP",
+   "slot": "FP-5",
+   "archetype": "under_determined",
+   "scenario": "Two people are audible on the same line and contradict each other about whether the premium was handed over. Diarisation cannot separate them. This is a listed NEEDS_HUMAN_REVIEW trigger, but group-level assignment succeeds, so the ordering rule forbids abstention.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with नंदिनी भरतभाई ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते नंदिनी जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy Generali Central Dream Guarantee, policy number zero nine six zero six four four, के premium renewal के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां, वो तो हो गया, agent ko de diya था"
+    },
+    {
+     "speaker": "customer",
+     "text": "नहीं नहीं, दिया कहां है अभी तक, तुम भी ना"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, माफ़ी चाहती हूं, क्या मैं confirm कर लूं — premium जमा हो चुका है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे तुझे क्या पता, दे दिया था मैंने पिछले हफ्ते"
+    },
+    {
+     "speaker": "customer",
+     "text": "कुछ नहीं दिया, मैं देख रही हूं ना रोज़, रखे हैं पैसे अलमारी में"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी नंदिनी जी, क्या आप बता सकते हैं कि premium दिया जा चुका है या अभी देना है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "<silence-detected/>"
+    },
+    {
+     "speaker": "agent",
+     "text": "नंदिनी जी, क्या आप मुझे सुन पा रहे हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "<end-call-silence-detection/>"
+    },
+    {
+     "speaker": "agent",
+     "text": "I am sorry, but I am unable to reach you. Since I have not received a response, I will end this call now. Have a great day ahead."
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0960644",
+    "product_name_group": "Generali Central Dream Guarantee",
+    "modal_premium": 7125,
+    "total_premium": 7125,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 1,
+    "no_of_premium_tbp": 19
+   },
+   "declared_grade": "GROUP",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": null,
+   "expected_expanded": null,
+   "must_not_select": [
+    "0011",
+    "Needs Human Review"
+   ],
+   "rival_code": "CTP",
+   "trap_phrase": "agent ko de diya",
+   "decisive_evidence": "कुछ नहीं दिया, मैं देख रही हूं ना रोज़, रखे हैं पैसे अलमारी में",
+   "cited_clause": "is there any affirmative payment intent anywhere in the customer",
+   "rebutted_rivals": [
+    {
+     "code": "0011",
+     "why": "One speaker asserts the handover, a second speaker on the same line flatly denies it and states the cash is still in the cupboard. Neither retracts. A contested assertion cannot license a Payment Submitted leaf.",
+     "clause": "The customer states, in the PAST TENSE, that the renewal premium for the current cycle has already been handed over"
+    },
+    {
+     "code": "0010",
+     "why": "The sub turns entirely on whether money has moved, which is exactly what the two speakers disagree about, and the call ends unresolved.",
+     "clause": "NOT 0010: any forward-looking promise, however confident"
+    },
+    {
+     "code": "0020",
+     "why": "The forward reading is equally unsupported - no speaker states an intention to pay, only that it has or has not already happened.",
+     "clause": "The customer has not yet paid, but has stated an intention to pay the renewal premium."
+    },
+    {
+     "code": "Needs Human Review",
+     "why": "This matches a listed REVIEW trigger, but the taxonomy orders the attempt: group-level assignment must be tried first and it succeeds here, because payment intent is affirmative under either speaker's account. Abstention is therefore not licensed.",
+     "clause": "USE ONLY after group-level assignment has been attempted and failed."
+    },
+    {
+     "code": "0083",
+     "why": "The line produced several substantive turns before the silence, so this is not a no-response call.",
+     "clause": "OPERATIONAL TEST: zero substantive customer turns."
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:two_speakers_collapsed",
+    "token:<silence-detected/>",
+    "token:<end-call-silence-detection/>",
+    "evidence:cross_speaker_contradiction",
+    "trap:listed_NHR_trigger"
+   ],
+   "redial": {
+    "is_required": "Yes – clarification",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Thu 09 Jul 2026, 11:00",
+    "context": "Payment status contested between two people on the line. Do NOT open by congratulating on payment and do NOT open by pushing a link. Ask to speak to the policyholder specifically, then ask one closed question about whether the premium has been handed over. Carry forward that an advisor route was mentioned and that a household member believes the cash is still at home.",
+    "basis": "DERIVED (not seeded): no matrix row exists for a group-level CTP expectation. Default +2 days per the 0022 no-firm-date precedent, clamped inside the 09:00-21:00 window."
+   }
+  },
+  {
+   "sn": 6,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FN-01",
+   "probe_type": "FN",
+   "slot": "FN-1",
+   "archetype": "canonical",
+   "scenario": "Clean, unambiguous instance. Customer states the cheque for this cycle was handed to his own named advisor last week.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with चतुर्वेदी नंदिनी सोलंकी ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते चतुर्वेदी जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "मैं उम्मीद करती हूँ कि आप हिंदी भाषा में बात करने में comfortable हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बिल्कुल"
+    },
+    {
+     "speaker": "agent",
+     "text": "आगे बढ़ने से पहले बताना चाहती हूं, यह call record की जा रही है internal training and quality purpose के लिए। यह call आपकी policy GC Big Income Multiplier, policy number nine four seven three one eight, के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, लेकिन मैंने तो अपने agent अनिकेत जी को cheque de diya था पिछले हफ्ते ही"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या वो आपके अपने advisor हैं, जिन्होंने policy करवाई थी?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां, वही मेरे agent हैं, शुरू से वही देखते हैं मेरी policy. बीस हज़ार का cheque दिया था उनको"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी चतुर्वेदी जी, धन्यवाद। मैं यह अपने system में note कर देती हूँ। अगर कोई और जानकारी चाहिए तो मैं call पर हूं।"
+    },
+    {
+     "speaker": "customer",
+     "text": "ठीक है, धन्यवाद"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0947318",
+    "product_name_group": "GC Big Income Multiplier",
+    "modal_premium": 20000,
+    "total_premium": 20000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 5,
+    "no_of_premium_tbp": 5
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0011 - Submitted To Advisor",
+   "must_not_select": [
+    "0022",
+    "0016",
+    "0020"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "अपने agent अनिकेत जी को cheque de diya था पिछले हफ्ते ही",
+   "cited_clause": "TRIGGERS: \"agent ko de diya\", \"advisor ko cheque de diya\"",
+   "rebutted_rivals": [
+    {
+     "code": "0022",
+     "why": "The handover is reported in the perfective past with a named prior week; nothing is promised for the future.",
+     "clause": "NOT THIS: already handed over"
+    },
+    {
+     "code": "0016",
+     "why": "The customer confirms this is his OWN assigned advisor who has serviced the policy from the start, not a company representative.",
+     "clause": "NOT THIS: handed to their own assigned advisor"
+    },
+    {
+     "code": "0010",
+     "why": "The channel is explicitly named (own advisor), so the stop-at-parent rule does not apply.",
+     "clause": "pick a leaf 0011-0018 ONLY if the customer explicitly names the channel"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Reconciliation checks payfile after T+2 working days for the advisor channel. If still unpaid, redial gently to resolve and open by acknowledging he said the cheque was given to advisor Verma; ask for the cheque number or date.",
+    "basis": "seeded: 0011 matrix row (T+2 verification-only)"
+   }
+  },
+  {
+   "sn": 7,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FN-02",
+   "probe_type": "FN",
+   "slot": "FN-2",
+   "archetype": "paraphrased_trigger",
+   "scenario": "The concept is fully present - money already in the hands of the customer's own selling agent - but none of the taxonomy's listed trigger phrases occur anywhere in the transcript.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with चौहान मीरा चतुर्वेदी ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते चौहान जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "आगे बढ़ने से पहले बताना चाहती हूं, यह call record की जा रही है internal training and quality purpose के लिए। यह call आपकी policy GC Money Back Super Plan, policy number nine nine two five three six, के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "आपका premium है तीस हज़ार रुपये, और आपकी due date है सोलह August दो हज़ार छब्बीस। आपके auto-debit register नहीं है, इसलिए payment manually करनी होगी। क्या मैं एक Payment Link share कर दूं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे नहीं madam, जो भैया हमारी policy करवाए थे ना, उनके हाथ में पैसा पहुंचा दिया था मैंने मंगलवार को"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या वो अभी भी आपकी policy देखते हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां, वही तो सब करते हैं. हर साल वही ले जाते हैं, रसीद भी दे जाते हैं"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी चौहान जी, समझ गई। धन्यवाद, मैं note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0992536",
+    "product_name_group": "GC Money Back Super Plan",
+    "modal_premium": 30000,
+    "total_premium": 30000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 4,
+    "no_of_premium_tbp": 8
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0011 - Submitted To Advisor",
+   "must_not_select": [
+    "0022",
+    "0016",
+    "0020"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "उनके हाथ में पैसा पहुंचा दिया था मैंने मंगलवार को",
+   "cited_clause": "and states the money is already with them",
+   "rebutted_rivals": [
+    {
+     "code": "0022",
+     "why": "'पहुंचा दिया था हरीश मंगलवार को' is perfective with a named past day. No future act is described.",
+     "clause": "NOT THIS: already handed over"
+    },
+    {
+     "code": "0016",
+     "why": "The receiver is identified as the person who sold the policy and services it every year, i.e. the customer's own advisor.",
+     "clause": "NOT THIS: handed to their own assigned advisor"
+    },
+    {
+     "code": "0010",
+     "why": "The channel is named descriptively rather than by keyword; the receiver is unambiguously identified as the selling advisor.",
+     "clause": "The customer names the advisor, or refers to \"mera agent / advisor / abhi jo aaye the\", and states the money is already with them."
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "lexical:zero_trigger_phrases"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Advisor channel, T+2 reconciliation. If still unpaid, open by acknowledging he handed the money to the agent who sold the policy, and ask for the receipt he says is always issued.",
+    "basis": "seeded: 0011 matrix row (T+2 verification-only)"
+   }
+  },
+  {
+   "sn": 8,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FN-03",
+   "probe_type": "FN",
+   "slot": "FN-3",
+   "archetype": "late_buried_evidence",
+   "scenario": "Opens in a 0061 shape - customer says he is busy and asks to be called later - then complains about repeated calls, then in the final turns reveals that the premium was already handed to his advisor in cash. Targets whole-transcript scanning.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with वैभव वैभवधरन ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए, जल्दी कर लीजिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते वैभव जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अभी तो मैं थोड़ा busy हूं, बाद में बात करते हैं"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी वैभव जी, बस एक मिनट लूंगी। यह call आपकी policy GC Long Term Income Plan, policy number nine four four eight nine five, के premium renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "देखिए रोज़ रोज़ phone आ रहा है आपका, कल भी आया था </interrupted>"
+    },
+    {
+     "speaker": "agent",
+     "text": "माफ़ी चाहती हूं — आपको बार-बार call आ रहे हैं, वो परेशान करने वाला रहा होगा।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां तो, एक ही बात कितनी बार. और मुझे ये बताइए मेरा policy number क्या है, मुझे याद नहीं रहता"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल। आपका policy number है nine four four eight nine five."
+    },
+    {
+     "speaker": "customer",
+     "text": "अच्छा ठीक है. और premium कितना है?"
+    },
+    {
+     "speaker": "agent",
+     "text": "आपका premium है पंद्रह हज़ार रुपये, और आपकी due date है सोलह August दो हज़ार छब्बीस।"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे हां, वो तो मैंने अपने advisor अनिकेत जी को cash दे दिया था दो तारीख को. आपके system में नहीं आया क्या अभी तक?"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी वैभव जी, जानकारी देने के लिए धन्यवाद। अनिकेत जी आपके अपने advisor हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां वही हैं, उन्होंने ही policy करवाई थी. रसीद भी दी थी उन्होंने"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ गई, मैं note कर लेती हूँ। धन्यवाद वैभव जी।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0944895",
+    "product_name_group": "GC Long Term Income Plan",
+    "modal_premium": 15000,
+    "total_premium": 15000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 7,
+    "no_of_premium_tbp": 3
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0011 - Submitted To Advisor",
+   "must_not_select": [
+    "0061",
+    "0048",
+    "0020"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "मैंने अपने advisor अनिकेत जी को cash दे दिया था दो तारीख को",
+   "cited_clause": "The premium has already been handed to the customer",
+   "rebutted_rivals": [
+    {
+     "code": "0061",
+     "why": "The opening 'बाद में बात करते हैं' is a 0061 shape, but the call did continue and the decisive payment evidence arrives later. Payment reporting outranks a callback request.",
+     "clause": "NOT CIP: any expression of intent to pay"
+    },
+    {
+     "code": "0048",
+     "why": "The repeated-calls complaint stays civil and is not offered as a reason to refuse or discontinue; no service grievance is claimed and the customer keeps engaging.",
+     "clause": "NOT 0040: mere non-payment. A customer who simply does not pay, with no reason given, is NOT 0040."
+    },
+    {
+     "code": "0022",
+     "why": "'दे दिया था दो तारीख को' is perfective with a named date.",
+     "clause": "NOT THIS: already handed over"
+    }
+   ],
+   "precedence_rule_applied": "P1",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "turn_structure:interrupted",
+    "token:</interrupted>",
+    "register:rushed",
+    "evidence:late_arrival",
+    "opening:rival_shaped_0061"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead - the customer's earlier 'call me later' is superseded by the payment report (Scheduling Logic rule 8). Reconciliation at T+2. This lead has a live repeated-calls irritation: if a reconciliation redial is required, open with an apology for the frequency, then ask for advisor Sharma's receipt from the 2nd.",
+    "basis": "seeded: 0011 matrix row (T+2 verification-only); suppression of the 0061 slot per Scheduling Logic rule 8"
+   }
+  },
+  {
+   "sn": 9,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FN-04",
+   "probe_type": "FN",
+   "slot": "FN-4",
+   "archetype": "degraded_input",
+   "scenario": "Diarisation is swapped - agent scripting is tagged 'customer' and vice versa - the advisor's name is ASR-corrupted, and the decisive turn is truncated by an interruption token. The label must survive on content alone.",
+   "transcript": [
+    {
+     "speaker": "customer",
+     "text": "हैलो, एम आई स्पीकिंग विथ बिश्नोई रामनिवास ji?"
+    },
+    {
+     "speaker": "agent",
+     "text": "हां जी हां जी बोलिए"
+    },
+    {
+     "speaker": "customer",
+     "text": "नमस्ते बिश्नोई जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy GC Lifetime Partner, policy number zero nine five six eight zero one, के renewal के बारे में है।"
+    },
+    {
+     "speaker": "agent",
+     "text": "हां वो तो एडवा एडवाइजर को cheque de diya था ना मैंने, ग्यारह तारीख </interrupted>"
+    },
+    {
+     "speaker": "customer",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या वो आपके अपने advisor थे?"
+    },
+    {
+     "speaker": "agent",
+     "text": "हां जी अपने ही हैं, वो चौध चौधरी ऋतुराजब, वही हर बार लेने आते हैं"
+    },
+    {
+     "speaker": "customer",
+     "text": "<silence-detected/>"
+    },
+    {
+     "speaker": "agent",
+     "text": "हैलो? सुनाई दे रहा है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "जी बिश्नोई जी, माफ़ी चाहती हूं, आवाज़ थोड़ी कट रही थी। मैंने note कर लिया है कि premium आपने अपने advisor को दे दिया है। धन्यवाद।"
+    },
+    {
+     "speaker": "agent",
+     "text": "हां ठीक है"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0956801",
+    "product_name_group": "GC Lifetime Partner",
+    "modal_premium": 12500,
+    "total_premium": 12500,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 3,
+    "no_of_premium_tbp": 12
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0011 - Submitted To Advisor",
+   "must_not_select": [
+    "0062",
+    "0063",
+    "0022"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "एडवाइजर को cheque de diya था ना मैंने, ग्यारह तारीख",
+   "cited_clause": "TRIGGERS: \"agent ko de diya\", \"advisor ko cheque de diya\"",
+   "rebutted_rivals": [
+    {
+     "code": "0062",
+     "why": "A brief audio hiccup is acknowledged but the conversation completed and the decisive content was captured. 0062 requires that the line made a meaningful conversation impossible.",
+     "clause": "Call quality made a meaningful conversation impossible"
+    },
+    {
+     "code": "0063",
+     "why": "The customer produced multiple substantive turns and the renewal purpose was stated and answered, so this is not an early drop.",
+     "clause": "the agent had not yet stated the renewal / premium purpose when the call ended"
+    },
+    {
+     "code": "0022",
+     "why": "Perfective with a named date ('ग्यारह तारीख'), notwithstanding the truncation.",
+     "clause": "NOT THIS: already handed over"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "diarisation:swapped",
+    "asr:phonetic_corruption_of_names",
+    "asr:stutter_repetition",
+    "turn_structure:truncated_mid_sentence",
+    "token:</interrupted>",
+    "token:<silence-detected/>",
+    "opener:devanagari_transliteration_defect"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Advisor channel, T+2 reconciliation. Note the line quality was poor and the advisor's name was not captured reliably (heard as 'Chaudhary'); if a reconciliation redial is needed, re-confirm the advisor's name rather than asserting it.",
+    "basis": "seeded: 0011 matrix row (T+2 verification-only)"
+   }
+  },
+  {
+   "sn": 10,
+   "test_case_id": "SUBMITTED_TO_ADVISOR-FN-05",
+   "probe_type": "FN",
+   "slot": "FN-5",
+   "archetype": "co_occurrence_precedence",
+   "scenario": "Both signals genuinely present: the premium has already been given to the advisor, AND the customer is driving and asks to be called back in the evening. The stated precedence rule resolves in favour of CTP.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with जोशी महेश ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए, मैं गाड़ी चला रहा हूं"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते जोशी जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy GC New Assure Plus, policy number nine one zero three six eight, के premium renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे हां, पैसा तो मैंने agent ko de diya है, पिछले हफ्ते ही"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या वो आपके अपने advisor हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां वही, राठौड़ जी. पर अभी मैं drive कर रहा हूं, शाम को call करना, तब detail में बात कर लेंगे"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल जोशी जी, driving में disturb नहीं करूंगी। बस एक बात confirm कर लूं — premium आपने राठौड़ जी को दे दिया है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां दे दिया है, cash में. शाम को बात करते हैं"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी धन्यवाद जोशी जी, safe driving. आपका दिन शुभ हो।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0910368",
+    "product_name_group": "GC New Assure Plus",
+    "modal_premium": 22966,
+    "total_premium": 22966,
+    "due_date": "18-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 4,
+    "no_of_premium_tbp": 6
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0011 - Submitted To Advisor",
+   "must_not_select": [
+    "0061",
+    "0060"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "पैसा तो मैंने agent ko de diya है, पिछले हफ्ते ही",
+   "cited_clause": "NOT CIP: any expression of intent to pay",
+   "rebutted_rivals": [
+    {
+     "code": "0061",
+     "why": "A callback request is present and genuine, but the taxonomy states payment reporting outranks it. CIP additionally requires that there was no payment, which fails here.",
+     "clause": "THE DECIDING TEST: contact happened AND there was no payment, no promise to pay, and no refusal."
+    },
+    {
+     "code": "0060",
+     "why": "Same precedence: any payment intent routes to CTP regardless of the scheduling request.",
+     "clause": "NOT 0060: any payment intent was expressed"
+    },
+    {
+     "code": "0022",
+     "why": "'दे दिया है, पिछले हफ्ते ही' is perfective with a named past week.",
+     "clause": "NOT THIS: already handed over"
+    }
+   ],
+   "precedence_rule_applied": "P1",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:rushed",
+    "co_occurrence:payment_plus_callback_request"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Tue 07 Jul 2026, 18:30 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. The customer asked for an evening call while driving; that request is honoured only if reconciliation fails. T+2 would fall on Thu 09 Jul, but the customer named an explicit evening slot, and Scheduling Logic rule 3 makes an explicit instruction override defaults - so if a reconciliation call is needed it goes at 18:30, not 11:00. Open by acknowledging the premium was given to advisor Negi in cash.",
+    "basis": "seeded: 0011 matrix row (verification-only) + Scheduling Logic rule 3 (explicit instruction wins) for the slot"
+   }
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dispogen"
+version = "0.2.0"
+description = "Disposition & re-dial test-case generator for conversational agents"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["openpyxl>=3.1", "PyYAML>=6.0"]
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.116"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+dispogen = "dispogen.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

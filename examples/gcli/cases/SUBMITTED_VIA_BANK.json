@@ -1,0 +1,1129 @@
+{
+ "engine_code": "SUBMITTED_VIA_BANK",
+ "label": "0013 - Submitted Via Bank",
+ "group": "CTP - Committed to Pay",
+ "sub": "0010 - Payment Submitted",
+ "source_of_truth_class": "transcript",
+ "anchor": "Tue 07 Jul 2026, 14:32",
+ "generated_by": "claude-opus-5 (in-session)",
+ "cases": [
+  {
+   "sn": 1,
+   "test_case_id": "SUBMITTED_VIA_BANK-FP-01",
+   "probe_type": "FP",
+   "slot": "FP-1",
+   "archetype": "nearest_rival_decoy",
+   "scenario": "Customer asserts 'NEFT kar diya', then retracts explicitly when asked for the UTR and states the transfer is still to be made this evening. The retraction is resolved, not left hanging.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with हरीश तेजस ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते हरीश जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "यह call आपकी policy GC Assured Educ Plan, policy number nine eight nine nine eight two, के premium renewal के बारे में है। आपका premium है अड़तीस हज़ार एक सौ छियानवे रुपये, और due date है सत्रह August दो हज़ार छब्बीस।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां NEFT kar diya मैंने"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, धन्यवाद। क्या आपके पास UTR number होगा, ताकि मैं record में डाल दूं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे नहीं नहीं, अभी किया नहीं, आज शाम तक कर दूंगा. सोच रहा था कर दूं, अभी net banking खोली नहीं"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ गई हरीश जी। तो आज शाम तक आप अपने bank से NEFT कर देंगे, सही समझा?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बिल्कुल, आज ही कर दूंगा"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0989982",
+    "product_name_group": "GC Assured Educ Plan",
+    "modal_premium": 38196,
+    "total_premium": 38196,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 6,
+    "no_of_premium_tbp": 2
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0020 - Payment Commitment",
+   "expected_expanded": "0024 - Assured to pay at Bank",
+   "must_not_select": [
+    "0013"
+   ],
+   "rival_code": "0024",
+   "trap_phrase": "NEFT kar diya",
+   "decisive_evidence": "अरे नहीं नहीं, अभी किया नहीं, आज शाम तक कर दूंगा",
+   "cited_clause": "NOT THIS: intends to deposit at the bank",
+   "rebutted_rivals": [
+    {
+     "code": "0013",
+     "why": "The perfective claim is retracted explicitly and immediately when the UTR is requested, and the customer then states the transfer is still to be made. Unlike an unresolved contradiction, the retraction settles the tense.",
+     "clause": "NOT THIS: intends to deposit at the bank"
+    },
+    {
+     "code": "0025",
+     "why": "The customer names net banking from his own bank account, not the payment link or app.",
+     "clause": "NOT THIS: will use the payment link"
+    },
+    {
+     "code": "0010",
+     "why": "The channel is explicitly named (bank / NEFT), so the stop-at-parent rule does not apply.",
+     "clause": "pick a leaf 0021-0029 ONLY if the customer explicitly names the channel"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "evidence:assert_then_retract_resolved"
+   ],
+   "redial": {
+    "is_required": "Yes – confirm + clearing lag",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Fri 10 Jul 2026, 11:00",
+    "context": "Confirmation callback +3 days to allow NEFT clearing after the committed same-day transfer. Confirm receipt in payfile; if not reflected, ask for the UTR before re-collecting. Do not treat the earlier 'NEFT kar diya' as a payment record.",
+    "basis": "seeded: 0024 matrix row (committed, +3 days for clearing)"
+   }
+  },
+  {
+   "sn": 2,
+   "test_case_id": "SUBMITTED_VIA_BANK-FP-02",
+   "probe_type": "FP",
+   "slot": "FP-2",
+   "archetype": "structural_trap",
+   "scenario": "Payment was completed through the shared link and the GC Life app, but funded from the customer's bank account, which he keeps foregrounding. The funding source is not the channel.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with चौहान हरीश ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते चौहान जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy Generali Central Assure, policy number zero zero nine two two three zero, के premium renewal के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे हो गया madam, transfer kar diya account se कल ही"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या आपने bank जाकर जमा किया था या NEFT किया था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "नहीं नहीं, bank नहीं गया. आपके app से ही किया था, successful आ गया screen पे"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ गई। तो आपने GC Life app से payment की थी?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां वही, जो link आपने भेजा था ना उसी से खोला था. पैसे तो account se ही कटे हैं, SBI वाले से"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल चौहान जी। क्या आपको कोई reference number मिला था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां आया था message, कुछ number था लंबा सा"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी धन्यवाद, मैं note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "092230",
+    "product_name_group": "Generali Central Assure",
+    "modal_premium": 5111,
+    "total_premium": 5111,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 8,
+    "no_of_premium_tbp": 4
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0014 - Submitted Via Online",
+   "must_not_select": [
+    "0013"
+   ],
+   "rival_code": "0014",
+   "trap_phrase": "transfer kar diya account se",
+   "decisive_evidence": "नहीं नहीं, bank नहीं गया. आपके app से ही किया था, successful आ गया screen पे",
+   "cited_clause": "NOT THIS: paid through the payment link or app, even if funded from a bank account",
+   "rebutted_rivals": [
+    {
+     "code": "0013",
+     "why": "The customer repeatedly names his bank account, but that is the funding source. He explicitly denies going to the bank and names the app and the shared link as the channel.",
+     "clause": "NOT THIS: paid through the payment link or app, even if funded from a bank account"
+    },
+    {
+     "code": "0025",
+     "why": "The payment completed - the customer reports a success screen and a reference message - so this is not a pending commitment.",
+     "clause": "NOT THIS: the link was shared and the customer says they will use it later"
+    },
+    {
+     "code": "0018",
+     "why": "This was a customer-initiated payment, not an automatic standing-instruction deduction; autopay_tag is Non ECS.",
+     "clause": "NOT THIS: an automatic standing-instruction deduction"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "lexical:funding_source_vs_channel"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Wed 08 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Online is the fastest-clearing channel, so reconciliation runs at T+1. If still unpaid, open by acknowledging the app payment succeeded on screen and ask for the reference number from the SMS he mentioned.",
+    "basis": "seeded: 0014 matrix row (T+1 verification-only)"
+   }
+  },
+  {
+   "sn": 3,
+   "test_case_id": "SUBMITTED_VIA_BANK-FP-03",
+   "probe_type": "FP",
+   "slot": "FP-3",
+   "archetype": "stop_at_parent",
+   "scenario": "Customer names the funding bank but, when asked directly whether it was a branch deposit or the online link, says he does not know. Naming the account is not naming the channel.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with मीरा सुमन ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते मीरा जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy GC New Assrd Wlth, policy number nine one seven six five four, के premium renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, SBI वाले account से पैसा गया है, message भी आया था"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या आपने bank जाकर जमा किया था, या online link से किया था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे वो मुझे नहीं पता, पैसा account se गया है बस, बाकी आप देख लो"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी मीरा जी, कोई बात नहीं। क्या आपको याद है कि आपने कुछ किया था — कोई form भरा, या phone पे कुछ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "देखिए मुझे इन चीज़ों की समझ नहीं है ज़्यादा. पैसा कट गया है, बस इतना पता है मुझे"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल, धन्यवाद। मैं यह note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0917654",
+    "product_name_group": "GC New Assrd Wlth",
+    "modal_premium": 35502,
+    "total_premium": 35502,
+    "due_date": "15-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Quaterly",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 12,
+    "no_of_premium_tbp": 10
+   },
+   "declared_grade": "SUB",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": null,
+   "must_not_select": [
+    "0013",
+    "0017"
+   ],
+   "rival_code": "0010",
+   "trap_phrase": "account se",
+   "decisive_evidence": "अरे वो मुझे नहीं पता, पैसा account se गया है बस, बाकी आप देख लो",
+   "cited_clause": "If the channel is not named, STOP AT 0010.",
+   "rebutted_rivals": [
+    {
+     "code": "0013",
+     "why": "Naming the SBI account identifies the funding source, not the channel. The taxonomy separates these explicitly, and under a direct either/or probe the customer says he does not know which was used.",
+     "clause": "NOT THIS: paid through the payment link or app, even if funded from a bank account"
+    },
+    {
+     "code": "0018",
+     "why": "autopay_tag is Non ECS, so no standing instruction exists to have produced the debit, and the customer does not describe an automatic deduction.",
+     "clause": "NOT THIS: an automatic standing-instruction deduction"
+    },
+    {
+     "code": "0017",
+     "why": "0017 requires each named channel to have been ruled out on evidence; here nothing has been ruled out, the channel is simply unknown.",
+     "clause": "IF the channel is simply not stated, do NOT default here - stop at 0010."
+    },
+    {
+     "code": "0020",
+     "why": "The debit is reported as completed ('पैसा कट गया है'), not promised.",
+     "clause": "NOT 0020: the premium is already paid"
+    }
+   ],
+   "precedence_rule_applied": "P5a",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:low_digital_literacy",
+    "lexical:funding_source_vs_channel"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Channel unknown, so reconciliation uses the slowest clearing window (T+3). Payment mode is Quarterly, so a missed reconciliation recurs sooner than annual leads. If still unpaid, open gently, avoid technical vocabulary, and ask him to read out the debit SMS rather than asking which channel he used.",
+    "basis": "DERIVED (not seeded): no matrix row exists for sub 0010. Conservative T+3 per the Scheduling Logic note that TAT reflects channel clearing speed."
+   }
+  },
+  {
+   "sn": 4,
+   "test_case_id": "SUBMITTED_VIA_BANK-FP-04",
+   "probe_type": "FP",
+   "slot": "FP-4",
+   "archetype": "out_of_class",
+   "scenario": "The policyholder's son answers, hedges a second-hand NEFT report, says his father is out, and names a next-morning slot.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with कल्पना वैभव ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "hello, main unka beta bol raha hoon, पापा बाहर गए हैं"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते सर। यह call कल्पना जी की policy के premium renewal के बारे में है। क्या आप बता सकते हैं कि उनसे कब बात हो सकती है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "उन्होंने NEFT kar diya था लगता है, कुछ बोल रहे थे परसों"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ सकती हूँ। क्या आपको पक्का पता है कि कब और कैसे किया था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "नहीं वो मुझे नहीं पता, वो अपना हिसाब खुद रखते हैं. मैंने बस सुना था"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल। तो मैं उनसे कब बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "kal subah call kar lijiye, तब घर पे रहेंगे"
+    },
+    {
+     "speaker": "agent",
+     "text": "ठीक है सर, धन्यवाद। आपका दिन शुभ हो।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0981126",
+    "product_name_group": "GC Big Dreams",
+    "modal_premium": 18000,
+    "total_premium": 18000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 3,
+    "no_of_premium_tbp": 12
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CIP - Contact in Pursuit",
+   "expected_sub": "0070 - No Right Party Contact (CIP branch)",
+   "expected_expanded": "0072 - Contacted Relative",
+   "must_not_select": [
+    "0013"
+   ],
+   "rival_code": "0072",
+   "trap_phrase": "NEFT kar diya",
+   "decisive_evidence": "main unka beta bol raha hoon",
+   "cited_clause": "own words establish that the renewal premium has either already been paid, or will be paid",
+   "rebutted_rivals": [
+    {
+     "code": "0013",
+     "why": "CTP requires the policyholder's own words. This is a son relaying a hedged report ('लगता है') and disclaiming knowledge when probed. The policyholder never spoke.",
+     "clause": "own words establish that the renewal premium has either already been paid, or will be paid"
+    },
+    {
+     "code": "0074",
+     "why": "The receiver identifies himself as the policyholder's son, acknowledging the relationship, so this is the CIP branch of 0070.",
+     "clause": "if the receiver ACKNOWLEDGES knowing the policyholder in any way, it is CIP"
+    },
+    {
+     "code": "0071",
+     "why": "The receiver is a family member, not an agent or distributor.",
+     "clause": "NOT THIS: a family member answered"
+    }
+   ],
+   "precedence_rule_applied": "P7",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "speaker_identity:relative"
+   ],
+   "redial": {
+    "is_required": "Yes",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Wed 08 Jul 2026, 10:30",
+    "context": "Next-day morning slot as named by the son. Reach the policyholder directly; C6 compliance means no policy specifics were shared with the son and none may be shared until identity is confirmed. Carry forward that a relative believes an NEFT was made - verify with the policyholder rather than treating it as established.",
+    "basis": "seeded: 0072 matrix row (relative gave a specific slot, 'kal subah' -> next-day 10:30)"
+   }
+  },
+  {
+   "sn": 5,
+   "test_case_id": "SUBMITTED_VIA_BANK-FP-05",
+   "probe_type": "FP",
+   "slot": "FP-5",
+   "archetype": "under_determined",
+   "scenario": "The agent violates the one-question rule and asks a compound either/or. The customer answers with a bare affirmative and the line drops, leaving payment intent established but tense unresolvable.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with अनिकेत राठौड़ ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते अनिकेत जी, मैं Generali Central Life Insurance Company Limited से Anika बोल रही हूँ। यह call आपकी policy GC Money Back Super Plan, policy number nine three two six eight nine, के premium renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "अच्छा अच्छा, वो bank mein jama वाला काम है ना?"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी अनिकेत जी। क्या आपने payment कर दी है या आप करने वाले हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "माफ़ी चाहती हूं, मैं ठीक से समझ नहीं पाई। premium जमा हो चुका है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "<silence-detected/>"
+    },
+    {
+     "speaker": "agent",
+     "text": "अनिकेत जी, क्या आप मुझे सुन पा रहे हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "<end-call-silence-detection/>"
+    },
+    {
+     "speaker": "agent",
+     "text": "I am sorry, but I am unable to reach you. Since I have not received a response, I will end this call now. Have a great day ahead."
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0932689",
+    "product_name_group": "GC Money Back Super Plan",
+    "modal_premium": 29187,
+    "total_premium": 29187,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 2,
+    "no_of_premium_tbp": 8
+   },
+   "declared_grade": "GROUP",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": null,
+   "expected_expanded": null,
+   "must_not_select": [
+    "0013",
+    "Needs Human Review"
+   ],
+   "rival_code": "CTP",
+   "trap_phrase": "bank mein jama",
+   "decisive_evidence": "क्या आपने payment कर दी है या आप करने वाले हैं?",
+   "cited_clause": "is there any affirmative payment intent anywhere in the customer",
+   "rebutted_rivals": [
+    {
+     "code": "0013",
+     "why": "The only affirmative is 'हां जी' answering a compound either/or question. It affirms payment intent but cannot select between the completed and the intended reading, and the customer never clarifies.",
+     "clause": "The customer states, in the PAST TENSE, that the renewal premium for the current cycle has already been handed over"
+    },
+    {
+     "code": "0024",
+     "why": "The forward reading is unsupported for exactly the same reason; the disjunction is never resolved.",
+     "clause": "TRIGGERS: \"bank mein jama kar dunga\", \"NEFT kar dunga\", \"cheque daal dunga\"."
+    },
+    {
+     "code": "0010",
+     "why": "Resolving the sub requires resolving the tense, which is precisely what the compound question destroyed.",
+     "clause": "NOT 0010: any forward-looking promise, however confident"
+    },
+    {
+     "code": "Needs Human Review",
+     "why": "Abstention is not licensed at group level: the customer engaged with the renewal topic and affirmed payment intent, so CTP is decidable and the taxonomy forbids using REVIEW to escape an ambiguous leaf.",
+     "clause": "Do NOT use to escape an ambiguous leaf - stop at the sub or the group instead."
+    },
+    {
+     "code": "0083",
+     "why": "The customer produced two substantive turns before the silence, so this is not a no-response call.",
+     "clause": "OPERATIONAL TEST: zero substantive customer turns."
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "turn_structure:single_turn_affirmative",
+    "token:<silence-detected/>",
+    "token:<end-call-silence-detection/>",
+    "agent_defect:compound_question_violates_one_question_rule"
+   ],
+   "redial": {
+    "is_required": "Yes – clarification",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Thu 09 Jul 2026, 11:00",
+    "context": "Payment status unresolved because the previous call asked a compound question and got a bare 'haan ji'. Open with ONE closed question - 'क्या premium जमा हो चुका है?' - and wait. Do not open with a link push and do not congratulate on payment. Flag the compound-question defect for agent QA.",
+    "basis": "DERIVED (not seeded): no matrix row exists for a group-level CTP expectation. Default +2 days per the 0022 no-firm-date precedent, clamped inside the calling window."
+   }
+  },
+  {
+   "sn": 6,
+   "test_case_id": "SUBMITTED_VIA_BANK-FN-01",
+   "probe_type": "FN",
+   "slot": "FN-1",
+   "archetype": "canonical",
+   "scenario": "Clean instance. Customer completed an NEFT from his SBI account two days ago and has the UTR to hand.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with मीरा रमेश ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते मीरा जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बिल्कुल"
+    },
+    {
+     "speaker": "agent",
+     "text": "आगे बढ़ने से पहले बताना चाहती हूं, यह call record की जा रही है internal training and quality purpose के लिए। यह call आपकी policy GC Guarantee Advantage, policy number nine seven nine seven seven six, के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, मैंने तो NEFT kar diya था SBI से, दो दिन पहले"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या आपके पास UTR number है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां है ना, net banking में दिख रहा है. पूरे पचास हज़ार रुपये भेजे थे आपके account में"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी मीरा जी, बहुत बढ़िया। मैं यह अपने system में note कर देती हूँ।"
+    },
+    {
+     "speaker": "customer",
+     "text": "ठीक है, धन्यवाद"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0979776",
+    "product_name_group": "GC Guarantee Advantage",
+    "modal_premium": 50000,
+    "total_premium": 50000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 7,
+    "no_of_premium_tbp": 3
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0013 - Submitted Via Bank",
+   "must_not_select": [
+    "0024",
+    "0014",
+    "0020"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "मैंने तो NEFT kar diya था SBI से, दो दिन पहले",
+   "cited_clause": "TRIGGERS: \"bank mein jama kar diya\", \"NEFT kar diya\"",
+   "rebutted_rivals": [
+    {
+     "code": "0024",
+     "why": "Perfective with a named interval ('दो दिन पहले') and a UTR the customer can see; nothing is promised.",
+     "clause": "NOT THIS: already deposited"
+    },
+    {
+     "code": "0014",
+     "why": "The transfer was made through the customer's own net banking to the company account, not through the payment link or app.",
+     "clause": "NOT THIS: paid through the payment link or app, even if funded from a bank account"
+    },
+    {
+     "code": "0018",
+     "why": "This was a customer-initiated NEFT, not an automatic standing-instruction deduction; autopay_tag is Non ECS.",
+     "clause": "NOT THIS: an automatic standing-instruction deduction"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Bank/NEFT clears slowest, so reconciliation runs at T+3. If still unpaid, open by acknowledging the NEFT from SBI two days ago and ask him to read out the UTR he says is visible in net banking.",
+    "basis": "seeded: 0013 matrix row (T+3 verification-only)"
+   }
+  },
+  {
+   "sn": 7,
+   "test_case_id": "SUBMITTED_VIA_BANK-FN-02",
+   "probe_type": "FN",
+   "slot": "FN-2",
+   "archetype": "paraphrased_trigger",
+   "scenario": "A completed RTGS from the customer's own account, described without any of the taxonomy's listed trigger phrases.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with तेजस ऋतुराज ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते ऋतुराज जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy GC Long Term Income Plan, policy number nine zero zero four zero one, के premium renewal के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, पर वो काम तो हो चुका है"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या आप बता सकते हैं कि किस तरह से?"
+    },
+    {
+     "speaker": "customer",
+     "text": "पैसे सीधे आपके खाते में भिजवा दिए थे मैंने, अपने SBI वाले खाते से, RTGS करके"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ गई। क्या वो branch जाकर किया था या net banking से?"
+    },
+    {
+     "speaker": "customer",
+     "text": "branch जाकर ही, form भरा था वहां. रसीद भी ली थी counter से"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी ऋतुराज जी, धन्यवाद। मैं यह note कर लेती हूँ।"
+    },
+    {
+     "speaker": "customer",
+     "text": "ठीक है जी"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0900401",
+    "product_name_group": "GC Long Term Income Plan",
+    "modal_premium": 15000,
+    "total_premium": 15000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 5,
+    "no_of_premium_tbp": 5
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0013 - Submitted Via Bank",
+   "must_not_select": [
+    "0024",
+    "0012",
+    "0020"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "पैसे सीधे आपके खाते में भिजवा दिए थे मैंने, अपने SBI वाले खाते से, RTGS करके",
+   "cited_clause": "The premium has already been paid through the customer",
+   "rebutted_rivals": [
+    {
+     "code": "0024",
+     "why": "'भिजवा दिए थे' is perfective and a receipt was taken; nothing is promised.",
+     "clause": "NOT THIS: already deposited"
+    },
+    {
+     "code": "0012",
+     "why": "The branch visited was his own SBI bank branch, where he filled an RTGS form - not a Generali Central office.",
+     "clause": "NOT THIS: deposited at their own BANK rather than a GC branch"
+    },
+    {
+     "code": "0015",
+     "why": "A bank counter is not a third-party cash collection outlet.",
+     "clause": "TRIGGERS: named collection outlets or \"cash counter par jama kiya\" where the counter is not a GC branch or bank."
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "lexical:zero_trigger_phrases"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Bank/RTGS channel, T+3 reconciliation. If still unpaid, open by acknowledging the RTGS from his SBI branch and ask for the counter receipt he says he took.",
+    "basis": "seeded: 0013 matrix row (T+3 verification-only)"
+   }
+  },
+  {
+   "sn": 8,
+   "test_case_id": "SUBMITTED_VIA_BANK-FN-03",
+   "probe_type": "FN",
+   "slot": "FN-3",
+   "archetype": "late_buried_evidence",
+   "scenario": "Opens with a textbook 0031 financial-hardship narrative that the taxonomy flags as the highest-frequency confusion, runs an empathy exchange, and only near the end reveals this cycle was already transferred from the bank.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with चौहान चौहान ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बताइए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते चौहान जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy Generali Central Assure, policy number zero zero zero nine seven two eight eight, के premium renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "देखिए madam, सच बात तो ये है कि अभी हालत ठीक नहीं है. खर्चे बहुत हैं, बच्चों की fees, दवाई का खर्चा"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी चौहान जी, समझ सकती हूँ। यह situation बहुत common है, आपके जैसे कई customers इसी spot पर थे।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, महंगाई ही इतनी है. काम भी पहले जैसा नहीं चल रहा"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी। क्या मैं जान सकती हूँ कि यह दिक्कत temporary है, या थोड़े लंबे समय की बात है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे नहीं नहीं madam, आप गलत समझ रही हैं. इस बार का premium तो मैंने bank se transfer kar diya था महीने की पहली तारीख को. वो अलग बात है, मैं तो बस बता रहा था कि आजकल खर्चे ज़्यादा हैं"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी चौहान जी, माफ़ी चाहती हूं, मैंने गलत समझ लिया। तो इस बार का premium आपने अपने bank से भेज दिया है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, चौदह सौ सत्तासी रुपये, पहली तारीख को ही. आप check कर लीजिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी धन्यवाद चौहान जी। मैं यह note कर देती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "097288",
+    "product_name_group": "Generali Central Assure",
+    "modal_premium": 1487,
+    "total_premium": 1487,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 9,
+    "no_of_premium_tbp": 6
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0013 - Submitted Via Bank",
+   "must_not_select": [
+    "0031",
+    "0030",
+    "0061"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "इस बार का premium तो मैंने bank se transfer kar diya था महीने की पहली तारीख को",
+   "cited_clause": "the renewal premium for the current cycle has already been handed over, deposited, transferred or auto-debited",
+   "rebutted_rivals": [
+    {
+     "code": "0031",
+     "why": "0031 requires a money reason that blocks THIS cycle's payment. The hardship is real but general; the customer corrects the agent explicitly and states this cycle was already transferred on the 1st.",
+     "clause": "NOT 0030: the customer names a hardship but still commits to a specific funded payment now"
+    },
+    {
+     "code": "0030",
+     "why": "The sub turns on inability to fund the premium. It was funded.",
+     "clause": "WHAT IT MEANS: The customer's stated blocker is MONEY - they cannot fund the premium at this time."
+    },
+    {
+     "code": "0061",
+     "why": "No later time is requested and no deferral occurs; the call completes with a payment report.",
+     "clause": "TRIGGERS: \"abhi busy hoon\", \"baad mein call kijiye\", \"kal baat karte hain\", \"shaam ko call karna\", \"main hospital mein hoon\", \"meeting mein hoon\"."
+    }
+   ],
+   "precedence_rule_applied": "P2",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:confiding",
+    "evidence:late_arrival",
+    "opening:rival_shaped_0031"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead and do NOT tag him as a financial-hardship lead for this cycle - the agent misread it on the call and was corrected. T+3 reconciliation on the bank channel. Carry forward the general cost pressure so the NEXT cycle opens early and offers frequency options.",
+    "basis": "seeded: 0013 matrix row (T+3 verification-only)"
+   }
+  },
+  {
+   "sn": 9,
+   "test_case_id": "SUBMITTED_VIA_BANK-FN-04",
+   "probe_type": "FN",
+   "slot": "FN-4",
+   "archetype": "degraded_input",
+   "scenario": "Several turns lost their speaker label entirely, the policy number digits are ASR-corrupted, and the decisive turn is interrupted. The label must survive on content alone.",
+   "transcript": [
+    {
+     "speaker": "unknown",
+     "text": "हैलो, एम आई स्पीकिंग विथ दीक्षित सक्सेना ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "yes"
+    },
+    {
+     "speaker": "unknown",
+     "text": "नमस्ते दीक्षित जी, मैं Generali Central Life Insurance Company Limited से Anika बोल रही हूँ। यह call आपकी policy GC New Assrd Wlth, policy number zero nine one nine three nine one seven two, के renewal के बारे में है।"
+    },
+    {
+     "speaker": "unknown",
+     "text": "हां जी, वो तो cheque bank mein daala था मैंने, पिछले </interrupted>"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या वो आपके अपने bank में था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां अपने ही bank में, HDFC में. वहीं drop box में डाला था cheque"
+    },
+    {
+     "speaker": "unknown",
+     "text": "<silence-detected/>"
+    },
+    {
+     "speaker": "agent",
+     "text": "दीक्षित जी, आवाज़ आ रही है?"
+    },
+    {
+     "speaker": "unknown",
+     "text": "हां आ रही है. cheque clear भी हो गया होगा अब तक"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी दीक्षित जी, धन्यवाद, मैं note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0919391",
+    "product_name_group": "GC New Assrd Wlth",
+    "modal_premium": 50000,
+    "total_premium": 50000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "F",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 2,
+    "no_of_premium_tbp": 10
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0013 - Submitted Via Bank",
+   "must_not_select": [
+    "0012",
+    "0063",
+    "0083"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "वो तो cheque bank mein daala था मैंने, पिछले </interrupted>",
+   "cited_clause": "TRIGGERS: \"bank mein jama kar diya\", \"NEFT kar diya\", \"cheque bank mein daala\"",
+   "rebutted_rivals": [
+    {
+     "code": "0012",
+     "why": "The customer confirms it was her own HDFC bank drop box, not a Generali office.",
+     "clause": "NOT THIS: deposited at their own BANK rather than a GC branch"
+    },
+    {
+     "code": "0063",
+     "why": "Multiple substantive turns occurred and the renewal purpose was stated and answered before the call ended.",
+     "clause": "the agent had not yet stated the renewal / premium purpose when the call ended"
+    },
+    {
+     "code": "0083",
+     "why": "Substantive customer content is present even though several turns lost their speaker label; the definitions key on what was said, not on the tag.",
+     "clause": "OPERATIONAL TEST: zero substantive customer turns."
+    }
+   ],
+   "precedence_rule_applied": "P8",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "diarisation:partially_unlabelled",
+    "asr:number_corruption_policy_no",
+    "turn_structure:truncated_mid_sentence",
+    "token:</interrupted>",
+    "token:<silence-detected/>",
+    "opener:devanagari_transliteration_defect"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Cheque via bank drop box clears slowest, so reconciliation runs at T+3. The policy number was captured with extra digits on this call - re-verify it against the lead record before any further contact.",
+    "basis": "seeded: 0013 matrix row (T+3 verification-only)"
+   }
+  },
+  {
+   "sn": 10,
+   "test_case_id": "SUBMITTED_VIA_BANK-FN-05",
+   "probe_type": "FN",
+   "slot": "FN-5",
+   "archetype": "co_occurrence_precedence",
+   "scenario": "Customer reports a completed bank deposit AND explicitly demands to be transferred to a human. 0065 has a strong explicit trigger, but the CIP deciding test fails because a payment occurred.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with चौहान तेजस चतुर्वेदी ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "yes बताइए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते तेजस चतुर्वेदी जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy GC Pearl Gaurantee, policy number nine five nine eight zero six, के premium renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे वो तो मैंने bank mein jama kar diya था चार तारीख को, cash में"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या वो आपका अपना bank था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां, PNB में जमा किया था, आपका जो account number दिया था उसी में"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ गई तेजस चतुर्वेदी जी, धन्यवाद।"
+    },
+    {
+     "speaker": "customer",
+     "text": "एक बात और, मुझे किसी इंसान से बात करानी है. आप bot हो ना? मुझे policy की tenure के बारे में detail में पूछना है"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, मैं Generali Central Life Insurance की AI assistant हूँ, नाम है Anika। मैं आपके लिए हमारे expert का callback arrange कर देती हूँ।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां वही कीजिए, कल दोपहर करा दीजिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल, मैं कल दोपहर का callback arrange कर देती हूँ। धन्यवाद।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0959806",
+    "product_name_group": "GC Pearl Gaurantee",
+    "modal_premium": 6066,
+    "total_premium": 6066,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 3,
+    "no_of_premium_tbp": 7
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0013 - Submitted Via Bank",
+   "must_not_select": [
+    "0065",
+    "0060"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "अरे वो तो मैंने bank mein jama kar diya था चार तारीख को, cash में",
+   "cited_clause": "THE DECIDING TEST: contact happened AND there was no payment, no promise to pay, and no refusal.",
+   "rebutted_rivals": [
+    {
+     "code": "0065",
+     "why": "The human-callback request is genuine and must be actioned, but CIP requires that no payment occurred. A cash deposit into the company account on the 4th is reported, so the group is CTP and the expert callback is an operational follow-up, not the disposition.",
+     "clause": "THE DECIDING TEST: contact happened AND there was no payment, no promise to pay, and no refusal."
+    },
+    {
+     "code": "0060",
+     "why": "Same precedence: any payment routes the interaction to CTP regardless of the scheduling or escalation request.",
+     "clause": "NOT 0060: any payment intent was expressed"
+    },
+    {
+     "code": "0012",
+     "why": "The deposit was made at PNB, the customer's own bank, into the company account - not at a Generali branch.",
+     "clause": "NOT THIS: deposited at their own BANK rather than a GC branch"
+    }
+   ],
+   "precedence_rule_applied": "P1",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "co_occurrence:payment_plus_human_agent_demand",
+    "compliance:ai_disclosure_triggered"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial this lead on the renewal track - it is converted, T+3 reconciliation on the bank channel. SEPARATELY, raise a human RM callback for tomorrow afternoon on the tenure query; that is an expert-queue task, not a dialer redial, and it must not be collapsed into the renewal cadence. If reconciliation fails, the renewal call must acknowledge both the PNB cash deposit and the pending expert callback.",
+    "basis": "seeded: 0013 matrix row (T+3 verification-only); human callback routed to the expert queue per Scheduling Logic rule 10 (specialist routing is not a bot redial)"
+   }
+  }
+ ]
+}

@@ -1,0 +1,104 @@
+# dispogen — client-agnostic defaults.
+# Anything here can be overridden by a client config in config/clients/<name>.yaml.
+# NOTHING client-specific belongs in this file or in src/. If you find yourself
+# editing Python to onboard an agent, that is a bug — open an issue.
+
+quota:
+  fn_probes: 5
+  fp_probes: 5
+  # FP slots are filled BY SEMANTIC ROLE, not by rank order. Filling by rank
+  # silently drops stop_at_parent and out_of_class on any leaf with a crowded
+  # sibling set, while still reporting 5/5 filled.
+  fp_slots:
+    - {slot: FP-1, role: nearest_rival_decoy, pools: [empirical, explicit, sibling]}
+    - {slot: FP-2, role: structural_trap,     pools: [explicit, sibling, empirical]}
+    - {slot: FP-3, role: stop_at_parent,      pools: [parent], fallback_pools: [out_of_class]}
+    - {slot: FP-4, role: out_of_class,        pools: [out_of_class], fallback_pools: [sibling, explicit]}
+    - {slot: FP-5, role: under_determined,    pools: [group]}
+  fn_archetypes:
+    - {slot: FN-1, archetype: canonical,                desc: "Clean, unambiguous instance. Baseline."}
+    - {slot: FN-2, archetype: paraphrased_trigger,      desc: "Concept present, zero listed trigger phrases."}
+    - {slot: FN-3, archetype: late_buried_evidence,     desc: "Decisive turn arrives late, after a rival-shaped opening."}
+    - {slot: FN-4, archetype: degraded_input,           desc: "Corrupted diarisation / ASR noise / production truncation tokens."}
+    - {slot: FN-5, archetype: co_occurrence_precedence, desc: "Competing signal present; a stated precedence rule resolves it."}
+
+tiers:
+  empirical:    {weight: 1.2, why: "confusion the engine has actually demonstrated"}
+  explicit:     {weight: 1.0, why: "named in this leaf's decision rules"}
+  parent:       {weight: 0.9, why: "stop-at-parent"}
+  sibling:      {weight: 0.8, why: "same sub -- structurally confusable by construction"}
+  out_of_class: {weight: 0.7, why: "different group / modality"}
+  group:        {weight: 0.6, why: "evidence insufficient for any leaf"}
+
+certification:
+  grades: [EXPANDED, SUB, GROUP]
+  demote_on_dissent: true       # EXPANDED -> SUB -> GROUP before exiling
+  require_unanimous: true       # majority vote produces a label; we need refusal
+  advocate_passes: 1
+  # Gate D is the blind panel. Same-vendor model diversity is WEAKER than
+  # cross-family: shared training lineage means shared blind spots. Ship a
+  # second vendor via a custom provider for full strength.
+  panel_size: 3
+
+deidentify:
+  enabled: true
+  salt_env: DISPOGEN_DEID_SALT
+  # Any generated case containing a real identifier from the source corpus is a
+  # release blocker. This runs as a validator (V16), not just a utility.
+  fields: [person_names, policy_numbers, phone_numbers, emails]
+
+render:
+  # The output contract is READ FROM the client's own output-format sheet.
+  # Never hardcode column names here.
+  appended_columns:
+    - test_case_id
+    - probe_type
+    - archetype
+    - certification_grade
+    - expected_group
+    - expected_sub
+    - expected_expanded
+    - must_not_select
+    - rival_code
+    - trap_phrase
+    - decisive_evidence
+    - cited_clause
+    - rebutted_rivals
+    - precedence_rule_applied
+    - source_of_truth_class
+    - pre_call_parameters
+    - perturbations
+    - redial_context
+    - redial_basis
+    - certification_status
+    - generated_by
+
+models:
+  # Opus 5 / Sonnet 5 REJECT temperature, top_p, top_k with a 400.
+  # Steer with effort + prompting, never with sampling parameters.
+  generator:
+    provider: anthropic
+    model: claude-opus-5
+    effort: xhigh
+    max_tokens: 32000
+    thinking: adaptive
+  advocate:
+    provider: anthropic
+    model: claude-opus-5
+    effort: high
+    max_tokens: 8000
+  critic_panel:
+    - {provider: anthropic, model: claude-opus-5,  effort: high,   max_tokens: 4000}
+    - {provider: anthropic, model: claude-sonnet-5, effort: high,   max_tokens: 4000}
+    - {provider: anthropic, model: claude-haiku-4-5, effort: medium, max_tokens: 4000}
+  smoke:
+    provider: anthropic
+    model: claude-haiku-4-5
+    effort: low
+    max_tokens: 4000
+
+learnings:
+  cap_tokens: 8000
+  # The domain-leak lint keeps learnings portable to the next onboarding.
+  # Client configs append their own terms; these are structural.
+  banned_patterns_extra: []

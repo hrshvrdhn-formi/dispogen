@@ -1,0 +1,1153 @@
+{
+ "engine_code": "SUBMITTED_TO_GC_BRANCH",
+ "label": "0012 - Submitted To GC Branch",
+ "group": "CTP - Committed to Pay",
+ "sub": "0010 - Payment Submitted",
+ "source_of_truth_class": "transcript",
+ "anchor": "Tue 07 Jul 2026, 14:32",
+ "generated_by": "claude-opus-5 (in-session)",
+ "cases": [
+  {
+   "sn": 1,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FP-01",
+   "probe_type": "FP",
+   "slot": "FP-1",
+   "archetype": "nearest_rival_decoy",
+   "scenario": "The trigger phrase is literally true, but about the PREVIOUS cycle. This cycle's branch visit is still planned for tomorrow.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with चौहान विक्रम ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते चौहान जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "आगे बढ़ने से पहले बताना चाहती हूं, यह call record की जा रही है internal training and quality purpose के लिए। यह call आपकी policy GC Assured Educ Plan, policy number nine eight nine nine eight two, के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "आपका premium है अड़तीस हज़ार एक सौ छियानवे रुपये, और आपकी due date है सत्रह August दो हज़ार छब्बीस। आपके auto-debit register नहीं है, इसलिए payment manually करनी होगी। क्या मैं एक Payment Link share कर दूं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "नहीं madam, मुझे online पर भरोसा नहीं. पिछली बार तो मैंने branch mein jama kar diya था, cash में"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ सकती हूँ। तो इस बार का premium आपने जमा कर दिया है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे नहीं नहीं, इस बार भी वही करूंगा, कल जाऊंगा branch"
+    },
+    {
+     "speaker": "agent",
+     "text": "ठीक है चौहान जी। तो कल आप branch जाकर premium जमा कर देंगे, सही समझा?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, कल सुबह ही निकलूंगा"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0989982",
+    "product_name_group": "GC Assured Educ Plan",
+    "modal_premium": 38196,
+    "total_premium": 38196,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 6,
+    "no_of_premium_tbp": 2
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0020 - Payment Commitment",
+   "expected_expanded": "0023 - Assured to pay at GC Branch",
+   "must_not_select": [
+    "0012"
+   ],
+   "rival_code": "0023",
+   "trap_phrase": "branch mein jama kar diya",
+   "decisive_evidence": "अरे नहीं नहीं, इस बार भी वही करूंगा, कल जाऊंगा branch",
+   "cited_clause": "NOT THIS: intends to visit the branch",
+   "rebutted_rivals": [
+    {
+     "code": "0012",
+     "why": "The perfective trigger phrase refers explicitly to 'पिछली बार' (last time). The sub requires the payment to be for the CURRENT cycle, and the customer denies having paid this one.",
+     "clause": "the renewal premium for the current cycle has already been handed over"
+    },
+    {
+     "code": "0010",
+     "why": "The channel is explicitly named (GC branch), so the stop-at-parent rule does not apply; only the tense separates the two candidates.",
+     "clause": "pick a leaf 0021-0029 ONLY if the customer explicitly names the channel"
+    },
+    {
+     "code": "0024",
+     "why": "The customer names the Generali branch, not his own bank.",
+     "clause": "NOT THIS: will deposit at their own bank"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "evidence:prior_cycle_decoy"
+   ],
+   "redial": {
+    "is_required": "Yes – confirm after visit",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Thu 09 Jul 2026, 11:00",
+    "context": "Confirmation callback the day after the stated visit (visit Wed 08 Jul, confirm Thu 09 Jul). Have the nearest branch address ready in case he asks. If the visit did not happen, re-extract a date; do not push online, he has stated distrust of online payment.",
+    "basis": "seeded: 0023 matrix row (confirmation callback the day after the stated visit day)"
+   }
+  },
+  {
+   "sn": 2,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FP-02",
+   "probe_type": "FP",
+   "slot": "FP-2",
+   "archetype": "structural_trap",
+   "scenario": "Customer says 'branch mein jama kar diya' meaning his own SBI bank branch, and corrects the agent explicitly when she assumes a Generali branch.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with राठौड़ नंदिनी ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते राठौड़ जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "यह call आपकी policy GC New Assure Plus, policy number nine one zero three six eight, के premium renewal के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे वो तो हो गया, मैंने branch mein jama kar diya था cheque"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या आप हमारी किसी Generali Central branch में गई थीं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "नहीं नहीं, SBI की branch में, मेरा account वहीं है. आपका office नहीं, मेरा बैंक"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ गई। तो आपने अपने bank में cheque जमा किया था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां, वहीं counter पे दिया था, चार तारीख को. वो clear हो गया होगा अब तक"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी राठौड़ जी, धन्यवाद। मैं यह note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0910368",
+    "product_name_group": "GC New Assure Plus",
+    "modal_premium": 22966,
+    "total_premium": 22966,
+    "due_date": "18-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "F",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 4,
+    "no_of_premium_tbp": 6
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0013 - Submitted Via Bank",
+   "must_not_select": [
+    "0012"
+   ],
+   "rival_code": "0013",
+   "trap_phrase": "branch mein jama kar diya",
+   "decisive_evidence": "नहीं नहीं, SBI की branch में, मेरा account वहीं है. आपका office नहीं, मेरा बैंक",
+   "cited_clause": "NOT THIS: deposited at their own BANK rather than a GC branch",
+   "rebutted_rivals": [
+    {
+     "code": "0012",
+     "why": "'branch' here denotes the customer's own SBI bank branch. She explicitly rejects the Generali reading when the agent probes it.",
+     "clause": "NOT THIS: deposited at their own BANK rather than a GC branch"
+    },
+    {
+     "code": "0024",
+     "why": "The cheque was deposited on the 4th, in the perfective past, not promised.",
+     "clause": "NOT THIS: already deposited"
+    },
+    {
+     "code": "0015",
+     "why": "A bank counter is not a third-party cash collection outlet.",
+     "clause": "TRIGGERS: named collection outlets or \"cash counter par jama kiya\" where the counter is not a GC branch or bank."
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "lexical:polysemous_branch"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Bank/cheque channel clears slowest, so reconciliation runs at T+3. If still unpaid, open by acknowledging the cheque was deposited at her SBI branch on the 4th and ask for the deposit slip or UTR.",
+    "basis": "seeded: 0013 matrix row (T+3 verification-only)"
+   }
+  },
+  {
+   "sn": 3,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FP-03",
+   "probe_type": "FP",
+   "slot": "FP-3",
+   "archetype": "stop_at_parent",
+   "scenario": "Elderly customer is certain the premium was paid and uses a listed trigger phrase, but cannot recall where. Under direct probing the referent of 'office' is never resolved.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with सोलंकी धैर्य ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते सोलंकी जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां sir समय है, बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "यह call आपकी policy Generali Central Guarantee Advantage, policy number zero zero nine one nine nine eight, के premium renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे वो तो मैंने office jaake de diya था"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, धन्यवाद। कौन से office में — हमारी Generali Central की branch में?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अब वो मुझे ठीक से याद नहीं. कहीं तो जमा किया था, counter था कोई. उमर हो गई है बेटा, याद नहीं रहता"
+    },
+    {
+     "speaker": "agent",
+     "text": "कोई बात नहीं सोलंकी जी। क्या आपको receipt मिली थी?"
+    },
+    {
+     "speaker": "customer",
+     "text": "रसीद तो होगी कहीं, ढूंढनी पड़ेगी. पर पैसा दे दिया था, ये पक्का है"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल, धन्यवाद। मैं note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "091998",
+    "product_name_group": "Generali Central Guarantee Advantage",
+    "modal_premium": 10000,
+    "total_premium": 10000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 15,
+    "no_of_premium_tbp": 1
+   },
+   "declared_grade": "SUB",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": null,
+   "must_not_select": [
+    "0012",
+    "0017"
+   ],
+   "rival_code": "0010",
+   "trap_phrase": "office jaake de diya",
+   "decisive_evidence": "अब वो मुझे ठीक से याद नहीं. कहीं तो जमा किया था, counter था कोई",
+   "cited_clause": "If the channel is not named, STOP AT 0010.",
+   "rebutted_rivals": [
+    {
+     "code": "0012",
+     "why": "The listed trigger appears, but 'office' is not a channel until its referent is fixed. Under a direct probe the customer cannot say whether it was a Generali branch, so the channel is not explicitly named.",
+     "clause": "pick a leaf 0011-0018 ONLY if the customer explicitly names the channel"
+    },
+    {
+     "code": "0017",
+     "why": "0017 requires each named channel to have been ruled out on evidence. Nothing has been ruled out here; the channel is simply unknown.",
+     "clause": "IF the channel is simply not stated, do NOT default here - stop at 0010."
+    },
+    {
+     "code": "0020",
+     "why": "Payment is asserted in the perfective past twice and never retracted, so this is not a forward commitment.",
+     "clause": "NOT 0020: the premium is already paid"
+    }
+   ],
+   "precedence_rule_applied": "P5a",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:elderly_slow",
+    "evidence:recall_failure"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Fri 10 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Channel unknown, so reconciliation uses the slowest clearing window (T+3). This is the final premium of the term (no_of_premium_tbp = 1), so treat any unpaid outcome as high priority. If unpaid, open gently, acknowledge he is certain he paid, and ask him to look for the receipt he believes he has.",
+    "basis": "DERIVED (not seeded): no matrix row exists for sub 0010. Conservative T+3 per the Scheduling Logic note that TAT reflects channel clearing speed."
+   }
+  },
+  {
+   "sn": 4,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FP-04",
+   "probe_type": "FP",
+   "slot": "FP-4",
+   "archetype": "out_of_class",
+   "scenario": "The policyholder's wife answers, reports a branch payment second-hand with a hedge, says he is out, and names an evening slot.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with चौहान भारद्वाज ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "वो घर पे नहीं हैं, main unki patni bol rahi hoon"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते जी। यह call चौहान जी की policy के premium renewal के बारे में है। क्या आप बता सकती हैं कि उनसे कब बात हो सकती है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "उन्होंने तो branch mein jama kar diya था शायद, ऐसा बता रहे थे पिछले हफ्ते"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी समझ सकती हूँ। क्या आपको पक्का पता है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अब मुझे क्या पता, वो ही जानें. मैं तो घर संभालती हूं"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल। तो क्या मैं उनसे बाद में बात कर लूं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां शाम को call कीजिए, तब घर पे होंगे"
+    },
+    {
+     "speaker": "agent",
+     "text": "ठीक है जी, मैं शाम को call कर लूंगी। धन्यवाद।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0973593",
+    "product_name_group": "GC Big Dreams",
+    "modal_premium": 75000,
+    "total_premium": 75000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 2,
+    "no_of_premium_tbp": 8
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CIP - Contact in Pursuit",
+   "expected_sub": "0070 - No Right Party Contact (CIP branch)",
+   "expected_expanded": "0072 - Contacted Relative",
+   "must_not_select": [
+    "0012"
+   ],
+   "rival_code": "0072",
+   "trap_phrase": "branch mein jama kar diya",
+   "decisive_evidence": "main unki patni bol rahi hoon",
+   "cited_clause": "own words establish that the renewal premium has either already been paid, or will be paid",
+   "rebutted_rivals": [
+    {
+     "code": "0012",
+     "why": "CTP requires the policyholder's own words. This is a spouse relaying a hedged second-hand report ('शायद') and disclaiming knowledge when probed.",
+     "clause": "own words establish that the renewal premium has either already been paid, or will be paid"
+    },
+    {
+     "code": "0074",
+     "why": "The receiver identifies herself as the policyholder's wife, acknowledging the relationship, so this is the CIP branch of 0070.",
+     "clause": "if the receiver ACKNOWLEDGES knowing the policyholder in any way, it is CIP"
+    },
+    {
+     "code": "0061",
+     "why": "The evening slot was offered by the spouse, not by the policyholder, who never came on the line.",
+     "clause": "The policyholder answered, was able to converse, and asked for the call to be made at a different time"
+    }
+   ],
+   "precedence_rule_applied": "P7",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "speaker_identity:relative"
+   ],
+   "redial": {
+    "is_required": "Yes",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Tue 07 Jul 2026, 18:30",
+    "context": "Same-day evening retry to reach the policyholder, honouring the slot his wife named and inside the 09:00-21:00 window. C6 compliance: no policy specifics were shared with the spouse and none may be shared until identity is confirmed. Carry forward that the spouse believes a branch payment was made - verify with the policyholder, do not assume it.",
+    "basis": "seeded: 0072 matrix row (spouse picked up, evening slot named -> same-day 18:30)"
+   }
+  },
+  {
+   "sn": 5,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FP-05",
+   "probe_type": "FP",
+   "slot": "FP-5",
+   "archetype": "under_determined",
+   "scenario": "The decisive verb ending is lost to an interruption mid-word, so 'jama kar diya' and 'jama kar dunga' are equally consistent. The customer never re-states it before the line ends.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with सोलंकी सक्सेना ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते सोलंकी जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy GC Pearl Gaurantee, policy number nine five nine eight zero six, के premium renewal के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "आपका premium है छह हज़ार छियासठ रुपये, और आपकी due date है सत्रह August दो हज़ार छब्बीस। क्या मैं एक Payment Link share कर दूं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे नहीं, branch mein jama kar </interrupted>"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी सोलंकी जी, माफ़ी चाहती हूं, आपकी बात बीच में कट गई। क्या आप दोहरा सकते हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "<silence-detected/>"
+    },
+    {
+     "speaker": "agent",
+     "text": "सोलंकी जी, क्या मैं confirm कर लूं — premium जमा हो चुका है या आप करने वाले हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "<end-call-silence-detection/>"
+    },
+    {
+     "speaker": "agent",
+     "text": "I am sorry, but I am unable to reach you. Since I have not received a response, I will end this call now. Have a great day ahead."
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0959806",
+    "product_name_group": "GC Pearl Gaurantee",
+    "modal_premium": 6066,
+    "total_premium": 6066,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "F",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 3,
+    "no_of_premium_tbp": 7
+   },
+   "declared_grade": "GROUP",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": null,
+   "expected_expanded": null,
+   "must_not_select": [
+    "0012",
+    "Needs Human Review"
+   ],
+   "rival_code": "CTP",
+   "trap_phrase": "branch mein jama kar",
+   "decisive_evidence": "अरे नहीं, branch mein jama kar </interrupted>",
+   "cited_clause": "is there any affirmative payment intent anywhere in the customer",
+   "rebutted_rivals": [
+    {
+     "code": "0012",
+     "why": "The verb is truncated mid-word and the utterance carries no ergative 'maine', so neither aspect is forced: 'jama kar diya' (paid) and 'jama kar dunga' (will pay) are both grammatical continuations. The customer never re-states it.",
+     "clause": "The customer states, in the PAST TENSE, that the renewal premium for the current cycle has already been handed over"
+    },
+    {
+     "code": "0023",
+     "why": "The forward reading is equally unsupported for the same reason; nothing distinguishes the two.",
+     "clause": "TRIGGERS: \"branch jaake jama kar dunga\", \"office aake de dunga\", customer accepts the branch-locator offer."
+    },
+    {
+     "code": "0010",
+     "why": "The sub itself cannot be resolved, since resolving it is exactly the tense question the truncation destroyed.",
+     "clause": "NOT 0010: any forward-looking promise, however confident"
+    },
+    {
+     "code": "Needs Human Review",
+     "why": "Abstention is not licensed at group level: affirmative payment intent is present under either reading, so CTP is decidable and the taxonomy forbids using REVIEW to escape an ambiguous leaf.",
+     "clause": "Do NOT use to escape an ambiguous leaf - stop at the sub or the group instead."
+    },
+    {
+     "code": "0062",
+     "why": "A single interruption token is not evidence of a line-quality problem identified on the call; neither party names an audio fault.",
+     "clause": "THE BOUNDARY vs 0083: 0062 requires some evidence of a line problem"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "turn_structure:truncated_mid_sentence",
+    "token:</interrupted>",
+    "token:<silence-detected/>",
+    "token:<end-call-silence-detection/>",
+    "asr:verb_ending_lost"
+   ],
+   "redial": {
+    "is_required": "Yes – clarification",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "Thu 09 Jul 2026, 11:00",
+    "context": "Payment status unresolved - the decisive verb was cut off. Do NOT open by congratulating on payment and do NOT open with a link push. Open by asking directly whether the premium has already been deposited at a branch or is still to be deposited, then branch. Note the previous call dropped, so re-establish audio first.",
+    "basis": "DERIVED (not seeded): no matrix row exists for a group-level CTP expectation. Default +2 days per the 0022 no-firm-date precedent, clamped inside the calling window."
+   }
+  },
+  {
+   "sn": 6,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FN-01",
+   "probe_type": "FN",
+   "slot": "FN-1",
+   "archetype": "canonical",
+   "scenario": "Clean instance. Customer visited a named Generali Central branch, paid in cash, and has the receipt.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with शुक्ला अनिल ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते शुक्ला जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बिल्कुल"
+    },
+    {
+     "speaker": "agent",
+     "text": "आगे बढ़ने से पहले बताना चाहती हूं, यह call record की जा रही है internal training and quality purpose के लिए। यह call आपकी policy GC Lifetime Partner, policy number nine seven two zero zero four, के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, पर मैंने तो payment कर दी है"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या आप बता सकते हैं किस माध्यम से?"
+    },
+    {
+     "speaker": "customer",
+     "text": "मैं खुद आपकी Kanpur वाली branch mein jama kar diya था cash, तीन तारीख को. रसीद भी मिली थी वहीं counter से"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी शुक्ला जी, धन्यवाद। मैं यह अपने system में note कर देती हूँ।"
+    },
+    {
+     "speaker": "customer",
+     "text": "ठीक है, और कुछ?"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी नहीं, बस इतना ही। आपका दिन शुभ हो।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0972004",
+    "product_name_group": "GC Lifetime Partner",
+    "modal_premium": 13000,
+    "total_premium": 13000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 5,
+    "no_of_premium_tbp": 5
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0012 - Submitted To GC Branch",
+   "must_not_select": [
+    "0023",
+    "0013",
+    "0020"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "मैं खुद आपकी Kanpur वाली branch mein jama kar diya था cash, तीन तारीख को",
+   "cited_clause": "TRIGGERS: \"branch mein jama kar diya\", \"office jaake de diya\"",
+   "rebutted_rivals": [
+    {
+     "code": "0023",
+     "why": "Perfective with a named date and a receipt; nothing is promised.",
+     "clause": "NOT THIS: already visited and paid"
+    },
+    {
+     "code": "0013",
+     "why": "The branch is identified as 'आपकी Kanpur वाली branch', i.e. a Generali Central office, not the customer's own bank.",
+     "clause": "NOT THIS: deposited at their own BANK rather than a GC branch"
+    },
+    {
+     "code": "0015",
+     "why": "A GC branch counter is not a third-party cash collection outlet.",
+     "clause": "NOT THIS: cash paid at a GC branch"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Reconciliation checks payfile after T+2 for the branch channel. If still unpaid, redial gently and open by acknowledging the cash payment at the Kanpur branch on the 3rd; ask for the receipt number.",
+    "basis": "seeded: 0012 matrix row (T+2 verification-only)"
+   }
+  },
+  {
+   "sn": 7,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FN-02",
+   "probe_type": "FN",
+   "slot": "FN-2",
+   "archetype": "paraphrased_trigger",
+   "scenario": "A completed in-person payment at a Generali office, described entirely without any of the taxonomy's listed trigger phrases.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with कल्पना भरतभाई ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते कल्पना जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। क्या यह आपसे बात करने का सही समय है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "यह call आपकी policy Generali Central Dream Guarantee, policy number nine six zero six four four, के premium renewal के बारे में है। क्या मैं आगे बात कर सकती हूँ?"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे madam, मैं खुद चलकर आया था आपके Surat वाले center पे, पिछले सोमवार"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, धन्यवाद। वहां क्या हुआ था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "वहीं पे payment कर आया था, आपके नाम का board लगा था बाहर. वहां जो बहन जी बैठी थीं, उन्होंने कागज़ दिया था stamp लगाकर"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी कल्पना जी, समझ गई। तो premium आप हमारे office में चुका आए हैं।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, सात हज़ार एक सौ पच्चीस रुपये पूरे"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी धन्यवाद, मैं note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0960644",
+    "product_name_group": "Generali Central Dream Guarantee",
+    "modal_premium": 7125,
+    "total_premium": 7125,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 1,
+    "no_of_premium_tbp": 19
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0012 - Submitted To GC Branch",
+   "must_not_select": [
+    "0023",
+    "0013",
+    "0020"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "वहीं पे payment कर आया था, आपके नाम का board लगा था बाहर",
+   "cited_clause": "The customer refers to having visited a branch and deposited the premium there.",
+   "rebutted_rivals": [
+    {
+     "code": "0023",
+     "why": "'चलकर आया था' and 'कर आया था' are perfective with a named past Monday and a stamped receipt.",
+     "clause": "NOT THIS: already visited and paid"
+    },
+    {
+     "code": "0013",
+     "why": "The premises are identified by the Generali signage outside, not as the customer's bank.",
+     "clause": "NOT THIS: deposited at their own BANK rather than a GC branch"
+    },
+    {
+     "code": "0016",
+     "why": "The customer travelled to the office himself; nobody collected from him.",
+     "clause": "TRIGGERS: \"aapke aadmi aaye the le gaye\", \"company se koi aaya tha, cheque de diya\"."
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "lexical:zero_trigger_phrases"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. Branch channel, T+2 reconciliation. If still unpaid, open by acknowledging the visit to the Surat office last Monday and ask for the stamped acknowledgement he was given.",
+    "basis": "seeded: 0012 matrix row (T+2 verification-only)"
+   }
+  },
+  {
+   "sn": 8,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FN-03",
+   "probe_type": "FN",
+   "slot": "FN-3",
+   "archetype": "late_buried_evidence",
+   "scenario": "Opens as a product-dissatisfaction grumble that looks like an FDC refusal, runs through an FAQ exchange, and only in the final turns reveals that the branch payment was already made.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with महाजन प्रशांत ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते महाजन जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy GC Big Income Multiplier, policy number nine seven seven two two nine, के renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "देखिए मैं साफ बता दूं, return अच्छा नहीं है इसमें. FD में डालता तो ज़्यादा मिलता"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी महाजन जी, आपकी बात समझ सकती हूँ। क्या मैं एक बात बता दूं कि यह plan किस तरह काम करता है?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बताइए, वैसे भी सुनना ही है"
+    },
+    {
+     "speaker": "agent",
+     "text": "इस plan में life cover के साथ guaranteed addition भी मिलता है, जो FD में नहीं होता। FD में आपके परिवार को cover नहीं मिलता।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां वो तो है. अच्छा ये बताइए maturity कब है मेरी?"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, आपकी policy term पंद्रह साल की है और अभी आपने चार premium भरे हैं।"
+    },
+    {
+     "speaker": "customer",
+     "text": "अच्छा ठीक. और सुनिए, मैंने premium तो branch mein jama kar diya था तीन तारीख को, वो अलग बात है. मैं तो बस बता रहा था कि return कम लगता है"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी महाजन जी, धन्यवाद बताने के लिए। तो इस बार का premium आप हमारी branch में जमा कर आए हैं?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी, Nagpur वाली branch में. रसीद है मेरे पास"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी धन्यवाद, मैं note कर लेती हूँ। आपकी feedback भी मैं आगे pass कर दूंगी।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0977229",
+    "product_name_group": "GC Big Income Multiplier",
+    "modal_premium": 25000,
+    "total_premium": 25000,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 4,
+    "no_of_premium_tbp": 11
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0012 - Submitted To GC Branch",
+   "must_not_select": [
+    "0044",
+    "0040",
+    "0023"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "मैंने premium तो branch mein jama kar diya था तीन तारीख को",
+   "cited_clause": "The customer has given an EXPLICIT, NAMED reason for refusing or ending the relationship",
+   "rebutted_rivals": [
+    {
+     "code": "0044",
+     "why": "The return complaint is a grumble, not a refusal. The customer explicitly separates it from his behaviour ('वो अलग बात है') and has already paid, so nothing was refused or ended.",
+     "clause": "The customer has given an EXPLICIT, NAMED reason for refusing or ending the relationship"
+    },
+    {
+     "code": "0040",
+     "why": "The sub requires a named grievance plus a refusal. Payment was made this cycle, so nothing was refused.",
+     "clause": "NOT 0040: mere non-payment. A customer who simply does not pay, with no reason given, is NOT 0040."
+    },
+    {
+     "code": "0023",
+     "why": "Perfective with a named date and a receipt in hand.",
+     "clause": "NOT THIS: already visited and paid"
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:neutral",
+    "evidence:late_arrival",
+    "opening:rival_shaped_0044"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead and do NOT suppress him as a grievance case - the return complaint was a grumble, not a refusal. T+2 reconciliation on the branch channel. Carry forward the product-return feedback so any future call opens by acknowledging it rather than re-pitching value.",
+    "basis": "seeded: 0012 matrix row (T+2 verification-only)"
+   }
+  },
+  {
+   "sn": 9,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FN-04",
+   "probe_type": "FN",
+   "slot": "FN-4",
+   "archetype": "degraded_input",
+   "scenario": "Diarisation has collapsed - every turn is tagged 'customer' - the opener is the production Devanagari-transliteration defect, and the branch city is ASR-corrupted. The label must survive on content alone.",
+   "transcript": [
+    {
+     "speaker": "customer",
+     "text": "हैलो, एम आई स्पीकिंग विथ ऋतुराज सचिन ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां बोलो"
+    },
+    {
+     "speaker": "customer",
+     "text": "नमस्ते सचिन जी, मैं Generali Central Life Insurance Company Limited से Anika बोल रही हूँ। यह call आपकी policy GC New Assrd Wlth, policy number zero nine five six eight zero one, के renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे वो हो गया ना, मैं गया था branch, ठाण ठाणे वाली, वहीं जमा कर दिया था"
+    },
+    {
+     "speaker": "customer",
+     "text": "जी, जानकारी देने के लिए धन्यवाद। क्या वो हमारी Generali Central की branch थी?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां हां आपकी ही, आपका ही office था, बड़ा सा board लगा था </interrupted>"
+    },
+    {
+     "speaker": "customer",
+     "text": "जी समझ गई सचिन जी। और premium कितना जमा किया था?"
+    },
+    {
+     "speaker": "customer",
+     "text": "पूरा किया था, बारह हज़ार पांच सौ, counter पे रसीद भी दी थी उन्होंने"
+    },
+    {
+     "speaker": "customer",
+     "text": "<silence-detected/>"
+    },
+    {
+     "speaker": "customer",
+     "text": "जी सचिन जी, धन्यवाद, मैं note कर लेती हूँ।"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0956801",
+    "product_name_group": "GC New Assrd Wlth",
+    "modal_premium": 12500,
+    "total_premium": 12500,
+    "due_date": "17-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 3,
+    "no_of_premium_tbp": 12
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0012 - Submitted To GC Branch",
+   "must_not_select": [
+    "0013",
+    "0063",
+    "0083"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "मैं गया था branch, ठाण ठाणे वाली, वहीं जमा कर दिया था",
+   "cited_clause": "The premium has already been paid in person at a Generali Central / GCLI branch office.",
+   "rebutted_rivals": [
+    {
+     "code": "0013",
+     "why": "The customer confirms under probing that it was a Generali office with company signage, not his bank.",
+     "clause": "NOT THIS: deposited at their own BANK rather than a GC branch"
+    },
+    {
+     "code": "0063",
+     "why": "Multiple substantive turns occurred and the renewal purpose was stated and answered, so this is not an early drop.",
+     "clause": "the agent had not yet stated the renewal / premium purpose when the call ended"
+    },
+    {
+     "code": "0083",
+     "why": "Substantive customer content is clearly present despite the collapsed speaker tags; the definitions key on what was said, not on the tag.",
+     "clause": "OPERATIONAL TEST: zero substantive customer turns."
+    }
+   ],
+   "precedence_rule_applied": "P8",
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "diarisation:collapsed",
+    "asr:phonetic_corruption_of_place",
+    "asr:stutter_repetition",
+    "token:</interrupted>",
+    "token:<silence-detected/>",
+    "opener:devanagari_transliteration_defect"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead. T+2 reconciliation on the branch channel. Diarisation was unreliable on this call and the branch city was captured only as 'Thane' with low confidence; if a reconciliation redial is needed, re-confirm which branch rather than asserting it.",
+    "basis": "seeded: 0012 matrix row (T+2 verification-only)"
+   }
+  },
+  {
+   "sn": 10,
+   "test_case_id": "SUBMITTED_TO_GC_BRANCH-FN-05",
+   "probe_type": "FN",
+   "slot": "FN-5",
+   "archetype": "co_occurrence_precedence",
+   "scenario": "Customer volunteers real financial hardship AND states this cycle's premium was already deposited at the branch. The hardship is about future cycles, so the money signal must not pull the case into 0030/0031.",
+   "transcript": [
+    {
+     "speaker": "agent",
+     "text": "Hello, am I speaking with नंदिनी धैर्य सोलंकी ji?"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां जी बोलिए"
+    },
+    {
+     "speaker": "agent",
+     "text": "नमस्ते नंदिनी जी, मैं Generali Central Life Insurance Company Limited के तरफ से Anika बोल रही हूँ। यह call आपकी policy Generali Central Anand, policy number nine seven three two one five, के premium renewal के बारे में है।"
+    },
+    {
+     "speaker": "customer",
+     "text": "देखिए madam, सच बताऊं तो अभी हालत थोड़ी tight चल रही है, बेटी की शादी है अगले साल"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी नंदिनी जी, समझ सकती हूँ। चलिए मिलकर एक आसान रास्ता निकालते हैं।"
+    },
+    {
+     "speaker": "customer",
+     "text": "अरे नहीं नहीं, इस बार का तो मैंने branch mein jama kar diya है पहले ही, पांच तारीख को Ahmedabad वाली branch में"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी, यह जानकर अच्छा लगा। धन्यवाद बताने के लिए।"
+    },
+    {
+     "speaker": "customer",
+     "text": "हां, बस अगले साल का देखना पड़ेगा, तब शादी का खर्चा होगा"
+    },
+    {
+     "speaker": "agent",
+     "text": "जी बिल्कुल नंदिनी जी। इस साल का premium जमा है, यह मैं note कर देती हूँ। अगले cycle के समय हम आपसे पहले ही बात कर लेंगे।"
+    },
+    {
+     "speaker": "customer",
+     "text": "ठीक है madam, धन्यवाद"
+    }
+   ],
+   "pre_call_parameters": {
+    "policy_no": "0973215",
+    "product_name_group": "Generali Central Anand",
+    "modal_premium": 9713,
+    "total_premium": 9713,
+    "due_date": "16-08-2026",
+    "autopay_tag": "Non ECS",
+    "policy_sts_long_desc_new": "InForce",
+    "payment_mode": "Annual",
+    "gender": "M",
+    "phase": "pre_due",
+    "interest": "Interest Not Required",
+    "no_of_premium_paid": 6,
+    "no_of_premium_tbp": 9
+   },
+   "declared_grade": "EXPANDED",
+   "expected_group": "CTP - Committed to Pay",
+   "expected_sub": "0010 - Payment Submitted",
+   "expected_expanded": "0012 - Submitted To GC Branch",
+   "must_not_select": [
+    "0031",
+    "0030",
+    "0032"
+   ],
+   "rival_code": null,
+   "trap_phrase": null,
+   "decisive_evidence": "इस बार का तो मैंने branch mein jama kar diya है पहले ही, पांच तारीख को Ahmedabad वाली branch में",
+   "cited_clause": "NOT 0030: the customer names a hardship but still commits to a specific funded payment now",
+   "rebutted_rivals": [
+    {
+     "code": "0031",
+     "why": "0031 requires the money reason to be the blocker for THIS cycle's payment. Here this cycle is already deposited; the hardship is forward-looking and attaches to next year.",
+     "clause": "NOT 0030: the customer names a hardship but still commits to a specific funded payment now"
+    },
+    {
+     "code": "0030",
+     "why": "The sub turns on the customer being unable to fund the premium. He funded it on the 5th.",
+     "clause": "WHAT IT MEANS: The customer's stated blocker is MONEY - they cannot fund the premium at this time."
+    },
+    {
+     "code": "0032",
+     "why": "No settled inability and no refusal; he has paid and expects to discuss the next cycle.",
+     "clause": "THE BOUNDARY vs 0031: any openness to a later contact, or any named future month, moves it to 0031."
+    }
+   ],
+   "precedence_rule_applied": null,
+   "perturbations": [
+    "scenario:pre-due_non-ECS",
+    "language:hindi_dominant_hinglish",
+    "diarisation:clean",
+    "register:confiding",
+    "co_occurrence:payment_plus_hardship"
+   ],
+   "redial": {
+    "is_required": "No – verification only",
+    "anchor_date": "Tue 07 Jul 2026, 14:32",
+    "schedule": "None if paid; auto-callback Thu 09 Jul 2026, 11:00 only if payfile=unpaid",
+    "context": "Do NOT redial a converted lead and do NOT flag him as a financial-risk lead for this cycle. T+2 reconciliation on the branch channel. Carry forward the stated future constraint (daughter's wedding next year) so the NEXT cycle's first contact opens early and offers frequency options rather than a late collection push.",
+    "basis": "seeded: 0012 matrix row (T+2 verification-only)"
+   }
+  }
+ ]
+}
