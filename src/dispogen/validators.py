@@ -229,6 +229,19 @@ def validate(cfg: Config, tax: Taxonomy, doc: dict, pack: dict,
             if not str(r.get("why", "")).strip():
                 E("V11", cid, f"rebuttal for {r.get('code')} has no reasoning")
 
+        # ---- V18 speaker roles must be ones production can emit
+        # A mis-diarisation probe has to carry the WRONG production label, not a
+        # third value: real ASR mislabels a turn as agent or customer, it never
+        # emits "unknown". A probe using a value production cannot produce tests
+        # nothing, exactly like a non-production token (V12).
+        roles = {"agent", "customer"}
+        for turn in c.get("transcript", []) or []:
+            if turn.get("speaker") not in roles:
+                E("V18", cid, f"speaker {turn.get('speaker')!r} is not a production "
+                              f"role {sorted(roles)}; mis-diarisation must use a wrong "
+                              f"real label, not a third value")
+                break
+
         # ---- V12 token vocabulary
         for bad in cfg.get("tokens.documented_but_not_produced", []) or []:
             if bad in tx:
