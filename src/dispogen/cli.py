@@ -442,6 +442,24 @@ def _classify_one_all(cfg, api, docs, key, a) -> int:
                       flush=True)
 
     summary = api.summarise(results)
+    # A spreadsheet of expected-vs-got, because scored.json is not reviewable by
+    # the people who own the taxonomy.
+    import csv as _csv
+    with (out_dir / "scored.csv").open("w", encoding="utf-8-sig", newline="") as fh:
+        w = _csv.writer(fh)
+        w.writerow(["test_case_id", "probe_type", "archetype", "declared_grade",
+                    "outcome", "expected_group", "expected_sub", "expected_expanded",
+                    "got_group", "got_sub", "got_expanded", "forbidden_hit",
+                    "confidence", "decision", "engine_reason"])
+        for r in sorted(results, key=lambda x: x["test_case_id"]):
+            e, g = r["expected"], r["got"]
+            w.writerow([r["test_case_id"], r["probe_type"], r["archetype"],
+                        r["declared_grade"], r["outcome"],
+                        e["GROUP"], e["SUB"], e["EXPANDED"],
+                        g["GROUP"], g["SUB"], g["EXPANDED"],
+                        ";".join(r.get("forbidden_hit") or []),
+                        r.get("confidence"), r.get("decision"),
+                        (r.get("engine_reason") or "")[:400]])
     (out_dir / "scored.json").write_text(
         json.dumps({"summary": summary, "results": results, "errors": errors},
                    ensure_ascii=False, indent=1), encoding="utf-8")

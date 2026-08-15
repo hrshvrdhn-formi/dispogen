@@ -53,10 +53,33 @@ def case_uuid(test_case_id: str) -> str:
     return uuid.uuid5(_NS, f"dispogen::{test_case_id}").hex
 
 
-def _pyrepr(transcript: list[dict]) -> str:
-    """Encode as single-quoted Python repr — the encoding this corpus uses."""
-    return repr([{"text": t.get("text", ""), "speaker": t.get("speaker", "")}
-                 for t in transcript or []])
+ROLE = {"agent": "assistant", "customer": "user"}
+
+
+def encode_transcript(transcript: list[dict], fmt: str, cycle_id: str = "",
+                      state_id_base: int = 600) -> str:
+    """Serialise turns for the transcript column.
+
+    `call_transcript` is the shape the engine's own callers use: a wrapper object
+    around role/content turns, where `agent`/`customer` become
+    `assistant`/`user`. The corpus stores the older `speaker`/`text` Python repr,
+    so both have to be expressible — which is why this is config, not a constant.
+    """
+    turns = transcript or []
+    if fmt == "pyrepr":
+        return repr([{"text": t.get("text", ""), "speaker": t.get("speaker", "")}
+                     for t in turns])
+    rc = []
+    for i, t in enumerate(turns):
+        d = {"role": ROLE.get(t.get("speaker"), t.get("speaker", "")),
+             "content": t.get("text", "")}
+        if cycle_id:
+            d["cycle_id"] = cycle_id
+            d["state_id"] = state_id_base + i
+        rc.append(d)
+    if fmt == "role_json":
+        return json.dumps(rc, ensure_ascii=False)
+    return json.dumps({"call_transcript": rc}, ensure_ascii=False)
 
 
 def _first(params: dict, *names, default=""):
@@ -69,6 +92,10 @@ def _first(params: dict, *names, default=""):
 def to_rows(cfg: Config, docs: list[dict]) -> list[dict]:
     """One report row per test case."""
     pre = cfg.get("classify.prior_state", {}) or {}
+    fmt = cfg.get("classify.transcript_format", "call_transcript")
+    # A fixed placeholder, not a random one: the same case must produce a
+    # byte-identical CSV on every run, or diffing two exports is meaningless.
+    cyc = cfg.get("classify.dummy_cycle_id", "")
     rows = []
     for doc in docs:
         for c in doc.get("cases", []):
@@ -102,7 +129,7 @@ def to_rows(cfg: Config, docs: list[dict]) -> list[dict]:
                                      "premium", "premium_due", "total_premium"),
                 "phase": _first(p, "phase", default="pre_due"),
                 "voice_recording_url": "",
-                "transcript": _pyrepr(c.get("transcript") or []),
+                "transcript": encode_transcript(c.get("transcript") or [], fmt, cyc),
                 "before_reliability_score": "", "after_reliability_score": "",
                 "reliability_score_reasoning": "", "next_activity_uuid": "",
                 "call_audit_score": "N/A",

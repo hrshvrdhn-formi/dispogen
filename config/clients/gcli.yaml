@@ -250,6 +250,13 @@ classify:
   use_case_id: persistency_gcli_1
   api_key_env: DISPO_API_KEY      # never put the key in this file
   poll_interval_ms: 2000
+  # Transcript encoding for the exported CSV.
+  #   call_transcript -> {"call_transcript":[{role,content,cycle_id,state_id}]}
+  #   role_json       -> [{role,content}]
+  #   pyrepr          -> [{'text':..,'speaker':..}]  (the corpus's own encoding)
+  transcript_format: call_transcript
+  # Fixed, not random: the same case must export byte-identically every run.
+  dummy_cycle_id: "00000000-0000-4000-8000-000000000001"
   # Prior-call state for cases that do not carry their own. Most probes are
   # single-call; sending a prior disposition they never had would let the engine
   # infer from history the case never established.
