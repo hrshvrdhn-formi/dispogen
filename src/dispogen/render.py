@@ -75,6 +75,21 @@ def _tj(c, d, cfg):
     return json.dumps(c.get("transcript", []), ensure_ascii=False)
 
 
+@resolver("transcript_call_format")
+def _tcf(c, d, cfg):
+    """The wire shape the engine's own callers send.
+
+    Delegates to apiclient so the workbook column and the CSV submitted for
+    classification are produced by one encoder. Two implementations of the same
+    format drift, and the drift shows up as an engine "failure" on a row that was
+    simply serialised differently from the one that was measured.
+    """
+    from .apiclient import encode_transcript
+    return encode_transcript(c.get("transcript", []),
+                             cfg.get("classify.transcript_format", "call_transcript"),
+                             cfg.get("classify.dummy_cycle_id", ""))
+
+
 @resolver("redial_required")
 def _rr(c, d, cfg): return c.get("redial", {}).get("is_required", "")
 
@@ -164,12 +179,24 @@ def write_csv(cfg: Config, docs: list[dict], out_path: Path) -> Path:
     # utf-8-sig: Excel on Windows reads a plain UTF-8 CSV as cp1252 and renders
     # every Devanagari transcript as mojibake. The BOM is what makes it open
     # correctly by double-click, which is how this file will actually be used.
-    with out_path.open("w", encoding="utf-8-sig", newline="") as fh:
-        w = _csv.writer(fh, quoting=_csv.QUOTE_ALL)
-        w.writerow(header)
-        for r in rows:
-            w.writerow(["" if v is None else str(v) for v in r])
-    return out_path
+    def _dump(p: Path):
+        with p.open("w", encoding="utf-8-sig", newline="") as fh:
+            w = _csv.writer(fh, quoting=_csv.QUOTE_ALL)
+            w.writerow(header)
+            for r in rows:
+                w.writerow(["" if v is None else str(v) for v in r])
+        return p
+
+    try:
+        return _dump(out_path)
+    except PermissionError:
+        # Windows locks a CSV that is open in Excel. Failing here loses the whole
+        # render even though the workbook already wrote, and the traceback names
+        # the path rather than the cause — so write beside it and say why.
+        alt = out_path.with_name(out_path.stem + "_new" + out_path.suffix)
+        _dump(alt)
+        print(f"  NOTE {out_path.name} is open in another program; wrote {alt.name}")
+        return alt
 
 
 def build(cfg: Config, docs: list[dict], register: dict, manifest: dict,

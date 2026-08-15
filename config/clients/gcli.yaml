@@ -189,7 +189,7 @@ render:
     "Is Redial Required":        redial_required
     "Anchor Date":               anchor
     "Redial Schedule Date Time": redial_schedule
-    "Transcript New Format":     transcript_json
+    "Transcript New Format":     transcript_call_format
 
 domain_terms:
   # The domain-leak lint. A learning that cannot be restated without these is a
