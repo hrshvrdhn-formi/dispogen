@@ -372,6 +372,91 @@ def cmd_certify(a) -> int:
     return 1 if (set(s) - {"CERTIFIED"}) else 0
 
 
+def cmd_classify(a) -> int:
+    """Run the suite against the live engine and keep the raw result."""
+    import os
+    from . import apiclient as api
+    cfg = _cfg(a)
+    docs = _load_case_docs(cfg, a.only or None)
+    if not docs:
+        print("no case files in output/cases/")
+        return 1
+    rows = api.to_rows(cfg, docs)
+    if a.limit:
+        rows = rows[:int(a.limit)]
+    dst = cfg.workdir("output", "classify") / f"{cfg.name}_input.csv"
+    api.write_csv(rows, dst)
+    print(f"{len(rows)} rows -> {dst}")
+    if a.export_only:
+        return 0
+
+    key = os.environ.get(cfg.get("classify.api_key_env", "DISPO_API_KEY"), "")
+    if not key:
+        print(f"set {cfg.get('classify.api_key_env')} in the environment")
+        return 2
+    if a.mode == "one":
+        return _classify_one_all(cfg, api, docs, key, a)
+    job = api.submit(cfg, dst, key)
+    print(f"submitted: {json.dumps(job, ensure_ascii=False)}")
+    su = job.get("status_url")
+    if not su:
+        print("no status_url in the response — nothing to poll")
+        return 1
+
+    def tick(res, secs):
+        keys = {k: v for k, v in res.items() if not isinstance(v, (list, dict))}
+        print(f"  [{secs:6.0f}s] {json.dumps(keys, ensure_ascii=False)[:220]}", flush=True)
+
+    res = api.poll(cfg, su, key, timeout_s=int(a.timeout or 3600), on_tick=tick)
+    out = cfg.workdir("output", "classify") / f"{cfg.name}_job.json"
+    out.write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"\nstatus={res.get('status')}  -> {out}")
+    return 0 if str(res.get("status", "")).lower() in ("completed", "complete", "done",
+                                                       "succeeded") else 1
+
+
+def _classify_one_all(cfg, api, docs, key, a) -> int:
+    """Per-case classification, concurrent, joined by interaction_ref."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    cases = [c for d in docs for c in d.get("cases", [])]
+    if a.limit:
+        cases = cases[: int(a.limit)]
+    out_dir = cfg.workdir("output", "classify")
+    results, errors = [], []
+
+    def one(c):
+        return c, api.classify_one(cfg, c, key, timeout_s=int(a.timeout or 300))
+
+    with ThreadPoolExecutor(max_workers=int(a.workers or 8)) as ex:
+        futs = {ex.submit(one, c): c for c in cases}
+        for i, f in enumerate(as_completed(futs), 1):
+            try:
+                c, verdict = f.result()
+                results.append(api.score_case(c, verdict))
+            except Exception as e:
+                c = futs[f]
+                errors.append({"test_case_id": c["test_case_id"],
+                               "error": f"{type(e).__name__}: {e}"})
+            if i % 25 == 0 or i == len(cases):
+                print(f"  [{i}/{len(cases)}] scored={len(results)} errors={len(errors)}",
+                      flush=True)
+
+    summary = api.summarise(results)
+    (out_dir / "scored.json").write_text(
+        json.dumps({"summary": summary, "results": results, "errors": errors},
+                   ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"\n=== ENGINE SCORECARD ({summary['total']} cases) ===")
+    print(f"  accuracy          {summary['accuracy']:.1%}")
+    print(f"  FALSE POSITIVES   {summary['false_positives']:3d}  ({summary['fp_rate']:.1%} of FP probes)")
+    print(f"  false negatives   {summary['false_negatives']:3d}  ({summary['fn_rate']:.1%} of FN probes)")
+    print(f"  over-committed    {summary['over_committed']:3d}")
+    print(f"  outcomes          {summary['outcomes']}")
+    if errors:
+        print(f"  errors            {len(errors)}")
+    print(f"\nWROTE {out_dir / 'scored.json'}")
+    return 0
+
+
 def cmd_scan_pii(a) -> int:
     cfg = _cfg(a)
     deid = _deid(cfg)
@@ -481,13 +566,21 @@ def main(argv=None) -> int:
     cert.add_argument("--only", nargs="*")
     cert.add_argument("--provider", help="override the panel provider (e.g. dryrun)")
     add("render", cmd_render).add_argument("--only", nargs="*")
+    cl = add("classify", cmd_classify)
+    cl.add_argument("--only", nargs="*")
+    cl.add_argument("--limit", type=int, help="submit only the first N rows (pilot)")
+    cl.add_argument("--export-only", action="store_true", help="write the CSV, do not submit")
+    cl.add_argument("--timeout", type=int, default=3600)
+    cl.add_argument("--workers", type=int, default=8)
+    cl.add_argument("--mode", choices=["csv", "one"], default="one",
+                    help="'one' = per-case classify-one (joins by interaction_ref)")
     add("scan-pii", cmd_scan_pii)
     add("scrub", cmd_scrub)
     add("run", cmd_run).add_argument("--check-credentials", action="store_true")
 
     a = ap.parse_args(argv)
     for attr in ("only", "provider", "check_credentials", "workers", "skip_existing",
-                 "tpm", "rpm", "buffer"):
+                 "tpm", "rpm", "buffer", "limit", "export_only", "timeout", "mode"):
         if not hasattr(a, attr):
             setattr(a, attr, None)
     try:

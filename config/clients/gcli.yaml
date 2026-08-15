@@ -240,3 +240,21 @@ models:
     effort: medium
     max_tokens: 64000
     thinking: adaptive
+
+# Live classification engine. Used by `dispogen classify` to run the suite
+# against the real thing and score what comes back.
+classify:
+  base_url: https://209-38-120-2.sslip.io
+  submit_path: /admin/dispositions/classify
+  customer_id: rohit
+  use_case_id: persistency_gcli_1
+  api_key_env: DISPO_API_KEY      # never put the key in this file
+  poll_interval_ms: 2000
+  # Prior-call state for cases that do not carry their own. Most probes are
+  # single-call; sending a prior disposition they never had would let the engine
+  # infer from history the case never established.
+  prior_state:
+    disposition: ""
+    sub_disposition: ""
+    extended_disposition: ""
+    confidence: ""

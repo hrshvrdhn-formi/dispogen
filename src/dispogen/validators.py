@@ -15,7 +15,7 @@ from typing import Any
 
 from .config import Config
 from .deidentify import Deidentifier
-from .taxonomy import Taxonomy
+from .taxonomy import Taxonomy, norm_label as norm
 
 DT_RE = re.compile(r"(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) (\d{2}) "
                    r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}), (\d{2}):(\d{2})")
@@ -123,6 +123,18 @@ def validate(cfg: Config, tax: Taxonomy, doc: dict, pack: dict,
                 E("V3", cid, "FP must not expect the host disposition")
             if leaf.num not in c.get("must_not_select", []):
                 E("V3", cid, f"FP must_not_select must contain the host code {leaf.num}")
+        # ---- V17 a case may not forbid its own answer
+        # Only the answer AT the declared grade. Forbidding an ANCESTOR is a
+        # legitimate and common construction — on an EXPANDED-graded case it means
+        # "do not stop at the sub", which is a real failure mode worth pinning.
+        # An earlier version of this check flagged those too and reported 40% of
+        # the suite as defective; the cases were fine.
+        want = {"GROUP": norm(c.get("expected_group")), "SUB": norm(c.get("expected_sub")),
+                "EXPANDED": norm(c.get("expected_expanded"))}
+        answer = want.get(c.get("declared_grade", "EXPANDED"), "")
+        if answer and answer in {norm(x) for x in c.get("must_not_select", [])}:
+            E("V17", cid, f"must_not_select forbids {answer!r}, which is this case's "
+                          f"own answer at its declared grade — no verdict can pass")
 
         # ---- V4 code resolution
         for r in [c.get("rival_code")] + list(c.get("must_not_select", [])) + \
