@@ -300,6 +300,7 @@ Read in this order on your first onboarding:
 | | |
 |---|---|
 | [QUICKSTART.md](QUICKSTART.md) | onboard an agent in about an hour, start to finish |
+| [docs/FIELDS.md](docs/FIELDS.md) | every column of the output sheet, and which three to score against |
 | [docs/CONFIG.md](docs/CONFIG.md) | every key in the one file you write, and why it matters |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | organised by what you actually see in the terminal |
 | [docs/RUN_REPORT.md](docs/RUN_REPORT.md) | a real 51-disposition run — costs, timings, what went wrong |
