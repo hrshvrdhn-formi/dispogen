@@ -181,7 +181,7 @@ render:
   contract_map:
     "SN":                        sn
     "Group":                     group_code
-    "Sub ":                      sub_name
+    "Sub":                       sub_name
     "Expanded":                  engine_code
     "Type":                      probe_type_label
     "Test Case Scenario":        scenario
